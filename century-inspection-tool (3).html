@@ -1,0 +1,2166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Century Roof &amp; Solar — Inspection Report Tool</title>
+<style>
+  :root {
+    --green: #005c34;
+    --green-2: #007a45;
+    --yellow: #ffd21f;
+    --light: #f3faf6;
+    --border: #b8d0c2;
+    --text: #17231d;
+    --muted: #5d6b63;
+    --shadow: 0 8px 22px rgba(0,92,52,.08);
+    --red: #c8302d;
+    --blue: #1f5f99;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: #f4f8f5;
+    line-height: 1.45;
+  }
+  .app { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .topbar { height: 4px; background: var(--green); margin: -16px -16px 16px; }
+
+  /* ===== Letterhead ===== */
+  .letterhead {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e1ece6;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 22px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .letterhead img { width: 100%; max-width: 200px; height: auto; display: block; }
+  .letterhead .info { font-size: 13px; color: var(--muted); }
+  .letterhead .info .name { color: var(--green); font-weight: 900; font-size: 22px; letter-spacing: .03em; text-transform: uppercase; margin-bottom: 6px; }
+
+  /* ===== Inspection type picker ===== */
+  .picker {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e1ece6;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .picker h2 { color: var(--green); margin: 0 0 6px; font-size: 22px; }
+  .picker p { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+  .type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .type-btn {
+    border: 2px solid var(--border);
+    background: var(--light);
+    border-radius: 12px;
+    padding: 18px 12px;
+    cursor: pointer;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: .03em;
+    color: var(--green);
+    transition: all .15s;
+    line-height: 1.3;
+  }
+  .type-btn:hover { background: white; border-color: var(--green); }
+  .type-btn.active { background: var(--green); color: white; border-color: var(--green); }
+  .type-btn small { display: block; font-weight: 600; font-size: 11px; opacity: .8; margin-top: 5px; text-transform: none; letter-spacing: 0; }
+
+  /* ===== Sheet (the report content) ===== */
+  .sheet {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid #dbe8e1;
+    margin-bottom: 14px;
+  }
+  .sheet h2 {
+    color: var(--green);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+    margin: 0 0 14px;
+    font-size: 17px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px; }
+  .form-row.three { grid-template-columns: repeat(3, 1fr); }
+  .form-row.full { grid-template-columns: 1fr; }
+  label { display: block; font-size: 12px; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+  input, select, textarea {
+    width: 100%;
+    border: 1px solid #cfdcd5;
+    border-radius: 7px;
+    padding: 10px;
+    font-size: 15px;
+    background: white;
+    font-family: inherit;
+  }
+  textarea { min-height: 80px; resize: vertical; line-height: 1.45; }
+  textarea.large { min-height: 140px; }
+
+  .help-text { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 4px; }
+
+  .section { margin-bottom: 18px; }
+
+  /* ===== Photos ===== */
+  .photo-section { margin-bottom: 18px; }
+  .photo-list { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 12px; }
+  .photo-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--light);
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .photo-card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #ddd;
+    cursor: pointer;
+  }
+  .photo-meta { display: flex; flex-direction: column; gap: 6px; }
+  .photo-card textarea { min-height: 80px; }
+  .photo-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .photo-actions button {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    font-size: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .photo-actions button.delete { color: var(--red); border-color: #f5b6b4; }
+  .photo-actions button:hover { background: var(--light); }
+
+  .add-photo {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    text-align: center;
+    background: var(--light);
+  }
+  .add-photo p { margin: 0 0 12px; color: var(--muted); font-size: 14px; font-weight: 700; }
+  .add-photo .photo-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .add-photo button {
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    letter-spacing: .03em;
+  }
+  .add-photo button.secondary { background: var(--blue); }
+
+  /* ===== Toolbar (action buttons) ===== */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+    padding: 14px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid #e1ece6;
+    position: sticky;
+    top: 8px;
+    z-index: 100;
+  }
+  .toolbar button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-clear { background: white; color: var(--green); border: 1px solid var(--border) !important; }
+  .btn-pdf { background: var(--green); color: white; }
+  .btn-email { background: var(--blue); color: white; }
+  .btn-send { background: var(--red); color: white; font-size: 14px; padding: 12px 20px; }
+
+  .save-status {
+    font-size: 12px;
+    color: var(--muted);
+    align-self: center;
+    margin-right: auto;
+    font-style: italic;
+  }
+  .save-status.saved { color: var(--green-2); font-weight: 700; font-style: normal; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #17231d;
+    color: white;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    z-index: 9999;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { opacity: 1; }
+  .toast.success { background: #1a6b3a; }
+  .toast.error { background: #a62828; }
+
+  /* ===== Image lightbox ===== */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+  .lightbox .close { position: absolute; top: 16px; right: 18px; color: white; font-size: 36px; cursor: pointer; background: none; border: none; }
+
+  /* ===== Saved Reports modal ===== */
+  .reports-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(23, 35, 29, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    padding: 16px;
+  }
+  .reports-modal.show { display: flex; }
+  .reports-modal-content {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .reports-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--green);
+    color: white;
+    border-radius: 14px 14px 0 0;
+  }
+  .reports-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: white;
+    border: none;
+    padding: 0;
+  }
+  .reports-close {
+    background: rgba(255,255,255,.15);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .reports-modal-body {
+    padding: 16px 20px 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .reports-search {
+    margin-bottom: 12px;
+  }
+  .reports-search input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+  }
+  .reports-status {
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    padding: 14px;
+    font-size: 13px;
+  }
+  .reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .report-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: var(--light);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .report-item-info { min-width: 0; }
+  .report-item-title {
+    font-weight: 800;
+    color: var(--green);
+    font-size: 14px;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .report-item-meta {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .report-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .report-item-actions button {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 11px;
+    font-size: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .report-item-actions .open-btn { background: var(--green); color: white; border-color: var(--green); }
+  .report-item-actions .delete-btn { color: var(--red); border-color: #f5b6b4; }
+  .reports-config-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #6b4c00;
+  }
+  .reports-config-warning strong { display: block; margin-bottom: 6px; font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .report-item { grid-template-columns: 1fr; }
+    .report-item-actions { justify-content: flex-end; }
+  }
+  .annotator {
+    position: fixed;
+    inset: 0;
+    background: #181b1a;
+    display: none;
+    flex-direction: column;
+    z-index: 10001;
+  }
+  .annotator.show { display: flex; }
+
+  .annotator-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #232927;
+    border-bottom: 1px solid #2f3633;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ann-btn {
+    background: #3b4441;
+    color: white;
+    border: 1px solid #4d5754;
+    border-radius: 7px;
+    padding: 9px 13px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 38px;
+  }
+  .ann-btn.active, .ann-btn[data-tool].active {
+    background: var(--green);
+    border-color: var(--green-2);
+  }
+  .ann-btn:active { transform: scale(.96); }
+  .ann-color-label {
+    color: #b6bcb9;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 4px 0 6px;
+  }
+  .ann-color {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    border: 2px solid #555c59;
+    cursor: pointer;
+    padding: 0;
+  }
+  .ann-color.active {
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--green);
+  }
+  .ann-sep {
+    width: 1px;
+    height: 26px;
+    background: #4d5754;
+    margin: 0 4px;
+  }
+
+  .annotator-canvas-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px;
+    touch-action: none;
+  }
+  .annotator-canvas-wrap canvas {
+    max-width: 100%;
+    max-height: 100%;
+    background: #000;
+    border-radius: 4px;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  .annotator-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #232927;
+    border-top: 1px solid #2f3633;
+  }
+  .ann-cancel, .ann-save {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+    min-height: 42px;
+    flex-shrink: 0;
+  }
+  .ann-cancel { background: #3b4441; color: white; }
+  .ann-save { background: var(--green); color: white; }
+  .ann-hint {
+    color: #b6bcb9;
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+    flex: 1;
+  }
+
+  @media (max-width: 600px) {
+    .ann-btn { padding: 8px 11px; font-size: 12px; }
+    .ann-hint { display: none; }
+    .annotator-toolbar { padding: 8px; gap: 4px; }
+  }
+
+  /* ===== Mobile ===== */
+  @media (max-width: 720px) {
+    .letterhead { grid-template-columns: 1fr; text-align: center; }
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+    .photo-card { grid-template-columns: 1fr; }
+    .photo-card img { height: 220px; }
+    .toolbar { flex-direction: column; }
+    .toolbar button { width: 100%; }
+    .save-status { margin: 0 0 6px; text-align: center; }
+  }
+
+  /* ===== Print/PDF ===== */
+  @media print {
+    body { background: white; }
+    .topbar, .picker, .toolbar, .add-photo, .photo-actions { display: none !important; }
+    .app { max-width: none; padding: 0; }
+    .sheet, .letterhead { box-shadow: none; border: none; page-break-inside: avoid; }
+    .photo-card { page-break-inside: avoid; border: 1px solid #999; background: white; }
+    .photo-card img { height: auto; max-height: 400px; }
+    input, select, textarea { border: none; background: transparent; font-size: 13px; }
+    textarea { min-height: 0; }
+    h2 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="topbar"></div>
+
+  <!-- ===================== LETTERHEAD ===================== -->
+  <div class="letterhead">
+    <img src="data:image/webp;base64,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" alt="Century Roof and Solar">
+    <div class="info">
+      <div class="name">Century Roof &amp; Solar</div>
+      23135 Saklan Road, Hayward, CA 94545<br>
+      Phone: (510) 780-9489 &nbsp;•&nbsp; Fax: (510) 784-0421<br>
+      www.centuryrooftile.com &nbsp;•&nbsp; License: 721502
+    </div>
+  </div>
+
+  <!-- ===================== INSPECTION TYPE PICKER ===================== -->
+  <div class="picker">
+    <h2>Inspection Report Tool</h2>
+    <p>Select the type of inspection report to begin.</p>
+    <div class="type-grid">
+      <button class="type-btn" data-type="gaf" onclick="setInspectionType('gaf')">GAF Warranty Claim<small>Detailed warranty inspection</small></button>
+      <button class="type-btn" data-type="general" onclick="setInspectionType('general')">General Roof Inspection<small>Standard inspection report</small></button>
+      <button class="type-btn" data-type="realestate" onclick="setInspectionType('realestate')">Real Estate Inspection<small>Property transaction report</small></button>
+    </div>
+  </div>
+
+  <!-- ===================== TOOLBAR ===================== -->
+  <div class="toolbar" id="toolbar" style="display:none;">
+    <span class="save-status" id="saveStatus">Auto-save ready</span>
+    <button class="btn-clear" onclick="openSavedReports()">📂 Saved Reports</button>
+    <button class="btn-clear" onclick="clearReport()">Clear &amp; Start Over</button>
+    <button class="btn-pdf" onclick="downloadPDF()">📄 Save as PDF</button>
+    <button class="btn-email" onclick="emailReport()">📧 Email Report</button>
+    <button class="btn-send" onclick="sendViaFormspree()">🚀 Send Report</button>
+  </div>
+
+  <!-- ===================== REPORT BODY ===================== -->
+  <div id="reportBody" style="display:none;">
+    <!-- Common header for all types -->
+    <div class="sheet">
+      <h2 id="reportTitle">Roof Inspection Report</h2>
+      <div class="form-row three">
+        <div><label>Date of Report</label><input type="date" id="f_date"></div>
+        <div><label>Date of Site Visit</label><input type="date" id="f_visit_date"></div>
+        <div><label>Time of Visit</label><input type="time" id="f_visit_time"></div>
+      </div>
+    </div>
+
+    <!-- ===== GAF FIELDS ===== -->
+    <div class="sheet inspection-fields" data-show="gaf">
+      <h2>GAF Warranty Claim</h2>
+      <div class="form-row">
+        <div><label>GAF Agent Name</label><input type="text" id="f_gaf_agent" placeholder="Jesse Rodriguez"></div>
+        <div><label>GAF Agent Phone</label><input type="tel" id="f_gaf_phone" placeholder="916-213-6624"></div>
+      </div>
+      <div class="form-row">
+        <div><label>GAF Claim #</label><input type="text" id="f_gaf_claim"></div>
+        <div><label>Golden Pledge Warranty #</label><input type="text" id="f_gaf_warranty"></div>
+      </div>
+    </div>
+
+    <!-- ===== CLIENT INFO (GAF + GENERAL) ===== -->
+    <div class="sheet inspection-fields" data-show="gaf,general">
+      <h2>Client Information</h2>
+      <div class="form-row">
+        <div><label>Resident / Customer Name</label><input type="text" id="f_resident_name"></div>
+        <div><label>Phone</label><input type="tel" id="f_resident_phone"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Street Address</label><input type="text" id="f_address"></div>
+        <div><label>City, State, Zip</label><input type="text" id="f_city"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Scope of Work</label><input type="text" id="f_scope" placeholder="Leaking Repair / Inspection / etc."></div>
+        <div><label>Job Location (if different)</label><input type="text" id="f_job_location"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Person Met On Site</label><input type="text" id="f_contact_person" placeholder="Homeowner / Tenant / Property Mgr"></div>
+        <div><label>Roof Type</label>
+          <select id="f_roof_type">
+            <option value="">— Select —</option>
+            <option>Shingles</option>
+            <option>Concrete Tile</option>
+            <option>Clay Tile</option>
+            <option>Metal</option>
+            <option>Flat / TPO</option>
+            <option>Flat / Modified Bitumen</option>
+            <option>Wood Shake</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label>Estimated Age of Roof</label><input type="text" id="f_roof_age" placeholder='e.g. "10 years"'></div>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- ===== REAL ESTATE CLIENT ===== -->
+    <div class="sheet inspection-fields" data-show="realestate">
+      <h2>Real Estate Inspection Information</h2>
+      <div class="form-row">
+        <div><label>Escrow Number</label><input type="text" id="f_re_escrow"></div>
+        <div><label>Phone</label><input type="tel" id="f_re_phone"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Real Estate Agent</label><input type="text" id="f_re_agent"></div>
+        <div><label>Type of Roof</label>
+          <select id="f_re_roof_type">
+            <option value="">— Select —</option>
+            <option>Shingles</option>
+            <option>Concrete Tile</option>
+            <option>Clay Tile</option>
+            <option>Metal</option>
+            <option>Flat / TPO</option>
+            <option>Flat / Modified Bitumen</option>
+            <option>Wood Shake</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label>Contact Name</label><input type="text" id="f_re_contact"></div>
+        <div><label>Approximate Age of Roof</label><input type="text" id="f_re_age"></div>
+      </div>
+      <div class="form-row full">
+        <div><label>Report Address</label><input type="text" id="f_re_address" placeholder="Property being inspected"></div>
+      </div>
+    </div>
+
+    <!-- ===== OBSERVATIONS (GAF + GENERAL) ===== -->
+    <div class="sheet inspection-fields" data-show="gaf,general">
+      <h2>Observations</h2>
+      <div class="section">
+        <label>Location of Problem</label>
+        <textarea id="f_problem_location" placeholder="e.g. Leaking in the front of the home, left of the front door, running down the fascia"></textarea>
+      </div>
+      <div class="section">
+        <label>Cause / Findings</label>
+        <textarea id="f_cause" class="large" placeholder="Describe what you observed and what you believe caused it. Tip: tap the microphone on your keyboard to dictate."></textarea>
+      </div>
+      <div class="section inspection-fields" data-show="general">
+        <label>Remedy / Recommended Repairs</label>
+        <textarea id="f_remedy" placeholder="What needs to be done to fix the issue"></textarea>
+      </div>
+      <div class="section">
+        <label>Other Observations</label>
+        <textarea id="f_other" placeholder="Anything else worth noting"></textarea>
+      </div>
+    </div>
+
+    <!-- ===== REAL ESTATE OBSERVATIONS ===== -->
+    <div class="sheet inspection-fields" data-show="realestate">
+      <h2>Findings</h2>
+      <div class="section">
+        <label>Findings for the Address</label>
+        <textarea id="f_re_findings" class="large" placeholder="Describe overall roof condition and findings. Tip: use voice dictation."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== PHOTOS ===== -->
+    <div class="sheet">
+      <h2>Photo Documentation</h2>
+      <div class="photo-section">
+        <div class="photo-list" id="photoList"></div>
+        <div class="add-photo">
+          <p>Add photos to the report</p>
+          <div class="photo-buttons">
+            <button onclick="addPhotoFromCamera()">📷 Take Photo</button>
+            <button class="secondary" onclick="addPhotoFromGallery()">🖼️ Choose from Gallery</button>
+          </div>
+          <p style="font-size:11px;margin-top:10px;">Tip: photos are auto-compressed to keep file size down.</p>
+        </div>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none" multiple onchange="handlePhotoUpload(event)">
+        <input type="file" id="galleryInput" accept="image/*" style="display:none" multiple onchange="handlePhotoUpload(event)">
+      </div>
+    </div>
+
+    <!-- ===== CONCLUSION (GAF + GENERAL) ===== -->
+    <div class="sheet inspection-fields" data-show="gaf,general">
+      <h2>Conclusion / Summary</h2>
+      <textarea id="f_conclusion" class="large" placeholder="Final summary of findings and recommendations to the client / GAF / etc."></textarea>
+    </div>
+
+    <!-- ===== SIGNATURE BLOCK (ALL) ===== -->
+    <div class="sheet">
+      <h2>Inspection Personnel</h2>
+      <div class="form-row">
+        <div><label>Inspector</label><input type="text" id="f_inspector" placeholder="e.g. Emilio Yepez"></div>
+        <div><label>Report Prepared By</label><input type="text" id="f_prepared_by" placeholder="e.g. Tony Diaz"></div>
+      </div>
+    </div>
+
+    <!-- ===== DISCLAIMERS PREVIEW ===== -->
+    <div class="sheet">
+      <h2>Limitations &amp; Disclaimers (Auto-Included on Every Report)</h2>
+      <p class="help-text" style="margin-bottom:14px;">
+        These are automatically included at the end of every PDF you generate. The list adapts to the inspection type — common items always show; GAF and Real Estate add their specific items. You don't need to do anything; this is shown so you know what the client receives.
+      </p>
+      <div id="disclaimerPreview" style="background:var(--light); border:1px solid var(--border); border-radius:8px; padding:14px; max-height:340px; overflow-y:auto; font-size:12px; line-height:1.55;"></div>
+    </div>
+
+    <!-- ===== CLIENT EMAIL (for sending) ===== -->
+    <div class="sheet">
+      <h2>Email Delivery</h2>
+      <div class="form-row">
+        <div><label>Send Report To (email address)</label><input type="email" id="f_email_to" placeholder="client@example.com"></div>
+        <div><label>CC (optional, comma-separated)</label><input type="text" id="f_email_cc" placeholder="agent@example.com, you@example.com"></div>
+      </div>
+      <p class="help-text">Used by the "Send Report" button to email the report directly through Formspree.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ===== SAVED REPORTS MODAL ===== -->
+<div class="reports-modal" id="reportsModal" aria-hidden="true">
+  <div class="reports-modal-content">
+    <div class="reports-modal-header">
+      <h2>📂 Saved Reports</h2>
+      <button class="reports-close" onclick="closeSavedReports()">×</button>
+    </div>
+    <div class="reports-modal-body">
+      <div class="reports-search">
+        <input type="text" id="reportsSearch" placeholder="Search by customer, address, or date..." oninput="filterReports()">
+      </div>
+      <div class="reports-status" id="reportsStatus">Loading reports...</div>
+      <div class="reports-list" id="reportsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHOTO ANNOTATION EDITOR (full-screen overlay) ===== -->
+<div class="annotator" id="annotator" aria-hidden="true">
+  <div class="annotator-toolbar">
+    <button class="ann-btn" id="annBtnArrow" data-tool="arrow" onclick="setAnnTool('arrow')" title="Arrow">↗ Arrow</button>
+    <button class="ann-btn" id="annBtnCircle" data-tool="circle" onclick="setAnnTool('circle')" title="Circle">○ Circle</button>
+    <span class="ann-sep"></span>
+    <span class="ann-color-label">Color:</span>
+    <button class="ann-color" data-color="#e02020" style="background:#e02020" onclick="setAnnColor('#e02020')" title="Red"></button>
+    <button class="ann-color" data-color="#ffd21f" style="background:#ffd21f" onclick="setAnnColor('#ffd21f')" title="Yellow"></button>
+    <button class="ann-color" data-color="#ffffff" style="background:#ffffff" onclick="setAnnColor('#ffffff')" title="White"></button>
+    <button class="ann-color" data-color="#000000" style="background:#000000" onclick="setAnnColor('#000000')" title="Black"></button>
+    <span class="ann-sep"></span>
+    <button class="ann-btn" onclick="undoAnnotation()" title="Undo last">↶ Undo</button>
+    <button class="ann-btn" onclick="clearAnnotations()" title="Clear all">✕ Clear</button>
+  </div>
+  <div class="annotator-canvas-wrap" id="annCanvasWrap">
+    <canvas id="annCanvas"></canvas>
+  </div>
+  <div class="annotator-footer">
+    <button class="ann-cancel" onclick="closeAnnotator(false)">Cancel</button>
+    <span class="ann-hint" id="annHint">Tap and drag on the photo to draw</span>
+    <button class="ann-save" onclick="closeAnnotator(true)">Save</button>
+  </div>
+</div>
+
+<!-- External libraries for PDF generation and image capture -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgodwvqn'; // Your existing Formspree endpoint
+var STORAGE_KEY = 'century_inspection_draft_v1';
+var INSPECTOR_PREF_KEY = 'century_inspector_pref';
+var PREPARED_BY_PREF_KEY = 'century_prepared_by_pref';
+
+// ===== AIRTABLE CONFIG (fill in tomorrow) =====
+// Get these from your Airtable account. See SETUP-GUIDE.md for instructions.
+var AIRTABLE_API_KEY = 'PASTE_YOUR_PERSONAL_ACCESS_TOKEN_HERE';
+var AIRTABLE_BASE_ID = 'PASTE_YOUR_BASE_ID_HERE';
+var AIRTABLE_TABLE_NAME = 'Reports'; // The table in your base — keep this default unless you renamed it
+
+function airtableConfigured() {
+  return AIRTABLE_API_KEY &&
+         AIRTABLE_API_KEY.indexOf('PASTE_') !== 0 &&
+         AIRTABLE_BASE_ID &&
+         AIRTABLE_BASE_ID.indexOf('PASTE_') !== 0;
+}
+
+// Comprehensive disclaimer language. Common items appear on every report;
+// type-specific items append based on inspection type.
+var COMMON_DISCLAIMERS = [
+  ['Visual Inspection Only', 'This report is based solely on a visual inspection of accessible surfaces at the time of inspection. We did not perform any destructive testing, removal of materials, or invasive examination. Conditions hidden behind, beneath, or within building components cannot be assessed without removal of those components.'],
+  ['Tile Roof Underlayment Limitation', 'On tile roofs (concrete, clay, or slate), we can inspect only the visible surface of the tiles. The underlayment, battens, fasteners, and structural decking beneath the tiles cannot be evaluated without removing tiles, which is outside the scope of this inspection. Underlayment failure, dry rot, or fastener corrosion may exist beneath visually intact tile and would not be detectable in this inspection.'],
+  ['Attic and Interior Access', 'Inspection of the attic, interior ceilings, garage interior, and other interior spaces was not performed unless specifically noted in this report. Access requires homeowner authorization and may not have been granted or available at the time of inspection. Interior signs of leakage, structural issues, or insulation conditions are not assessed.'],
+  ['Active and Intermittent Leaks', 'We can only report on conditions disclosed to us at the time of inspection or visible during our visit. Active leaks, intermittent leaks, or moisture intrusion that occurs only during specific weather conditions (heavy rain, wind-driven rain, snow, ice damming) may not be observable on a dry day and would not be reflected in this report unless specifically disclosed by the property owner.'],
+  ['Gutters and Drainage', 'Gutters, downspouts, gutter guards, and surface drainage systems are not inspected unless specifically noted. Century Roof and Solar makes no representation regarding their function, condition, or freedom from leaks.'],
+  ['Patio Covers, Awnings, and Roof Accessories', 'Patio covers, awnings, solar arrays, satellite dishes, antennas, skylight interior seals, and similar roof-mounted accessories are not part of this inspection unless specifically noted.'],
+  ['Solar Arrays', 'Where solar panels are present, we inspected only the roof surfaces visible around and beneath the array as accessible. Roof condition under and behind solar arrays cannot be fully assessed without panel removal, which is outside the scope of this inspection.'],
+  ['Chimneys and Fireplaces', 'Chimneys are inspected only for roof-related flashing and weatherproofing. Internal chimney condition, flue condition, and combustion safety are outside our scope and require a certified chimney sweep.'],
+  ['Mold and Biological Growth', 'Visible algae, moss, or biological staining is noted where seen. We do not perform mold testing. Concerns about mold or moisture intrusion require evaluation by a qualified industrial hygienist.'],
+  ['Hazardous Materials', 'We do not test for, or assess, asbestos, lead, or other hazardous materials that may be present in older roofing systems. Disturbance of older roofing materials may release hazardous substances; testing should be performed prior to any repair or replacement work.'],
+  ['Weather and Seasonal Conditions', 'Weather conditions at the time of inspection may affect what is visible. Wet, snowy, icy, or excessively hot conditions may obscure defects. This report reflects conditions only at the date and time of inspection.'],
+  ['No Warranty Against Future Conditions', 'This report describes the condition of the roof at the time of inspection only. It does not constitute a warranty, guarantee, or insurance against future leaks, damage, defects, or premature failure. Roofing materials degrade over time and weather events may cause new damage at any time.'],
+  ['Repair Recommendations', 'Any repair recommendations or estimated remaining roof life are professional opinions based on visible conditions. Actual repair costs, scope, and remaining service life may differ. Formal repair bids are provided separately upon request.'],
+  ['Hidden Damage from Prior Repairs', 'Where prior repairs, patches, or modifications are visible, we cannot determine the quality of work concealed by those repairs without invasive investigation.'],
+  ['Code Compliance', 'This inspection does not constitute a code compliance review. Building code requirements vary by jurisdiction and time period, and historical installations may not meet current code.'],
+  ['Safety and Access Limitations', 'Areas that posed safety risks, were too steep to walk, or were inaccessible due to height, obstructions, or condition were inspected from accessible vantage points (ground, ladder, drone, or adjacent surfaces) only.']
+];
+
+var GAF_DISCLAIMERS = [
+  ['Warranty Determination Authority', 'This inspection is performed in support of a warranty claim with GAF Materials Corporation. The findings represent our professional observations submitted to GAF for their review. Final determination of warranty coverage, scope of approved work, and compensation rests solely with GAF. Century Roof and Solar makes no representation regarding warranty approval.']
+];
+
+var REAL_ESTATE_DISCLAIMERS = [
+  ['Not a Substitute for a Home Inspection', 'This inspection is provided for informational purposes in connection with a real estate transaction. It is not a substitute for a comprehensive home inspection by a licensed home inspector. We recommend that any prospective buyer obtain an independent inspection by a licensed home inspection professional.'],
+  ['Reliance and Decision-Making', 'The findings in this report should not be the sole basis for any real estate transaction decision. Buyer is advised to obtain all relevant property disclosures, prior repair records, permits, and warranties from the seller.'],
+  ['Third-Party Reliance', 'This report is prepared for the named client only. Reliance on this report by any third party is at their own risk and without our consent.'],
+  ['Limitation of Liability', 'Our liability under this inspection is limited to the cost of the inspection. We carry general liability insurance; coverage details are available on request.']
+];
+
+function getDisclaimersForType(type) {
+  var list = COMMON_DISCLAIMERS.slice();
+  if (type === 'gaf') list = list.concat(GAF_DISCLAIMERS);
+  if (type === 'realestate') list = list.concat(REAL_ESTATE_DISCLAIMERS);
+  return list;
+}
+
+function renderDisclaimerPreview(type) {
+  var container = document.getElementById('disclaimerPreview');
+  if (!container) return;
+  var list = getDisclaimersForType(type);
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    html += '<div style="margin-bottom:10px;">' +
+      '<strong style="color:var(--green);">' + (i + 1) + '. ' + escapeHtmlText(list[i][0]) + '.</strong> ' +
+      escapeHtmlText(list[i][1]) +
+      '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function escapeHtmlText(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ============================================================================
+// STATE
+// ============================================================================
+var inspectionType = null; // 'gaf', 'general', 'realestate'
+var photos = []; // [{id, dataUrl, caption}]
+var saveTimer = null;
+
+// ============================================================================
+// TOAST
+// ============================================================================
+function toast(msg, type, ms) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function () { t.classList.remove('show'); }, ms || 3500);
+}
+
+// ============================================================================
+// INSPECTION TYPE
+// ============================================================================
+function setInspectionType(type) {
+  inspectionType = type;
+
+  // Update active button
+  var buttons = document.querySelectorAll('.type-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].classList.toggle('active', buttons[i].getAttribute('data-type') === type);
+  }
+
+  // Show/hide field sections based on type
+  var fieldGroups = document.querySelectorAll('.inspection-fields');
+  for (var j = 0; j < fieldGroups.length; j++) {
+    var showFor = (fieldGroups[j].getAttribute('data-show') || '').split(',');
+    fieldGroups[j].style.display = showFor.indexOf(type) !== -1 ? '' : 'none';
+  }
+
+  // Update title
+  var titles = {
+    gaf: 'GAF Warranty Claim — Roof Inspection',
+    general: 'Roof Inspection Report',
+    realestate: 'Real Estate Roof Inspection Report'
+  };
+  document.getElementById('reportTitle').textContent = titles[type] || 'Roof Inspection Report';
+
+  // Render disclaimer preview for this type
+  renderDisclaimerPreview(type);
+
+  // Show toolbar and report body
+  document.getElementById('toolbar').style.display = '';
+  document.getElementById('reportBody').style.display = '';
+
+  // Restore inspector / prepared-by from previous session
+  try {
+    var inspectorPref = localStorage.getItem(INSPECTOR_PREF_KEY);
+    var preparedPref = localStorage.getItem(PREPARED_BY_PREF_KEY);
+    if (inspectorPref && !document.getElementById('f_inspector').value) {
+      document.getElementById('f_inspector').value = inspectorPref;
+    }
+    if (preparedPref && !document.getElementById('f_prepared_by').value) {
+      document.getElementById('f_prepared_by').value = preparedPref;
+    }
+  } catch (e) { /* localStorage may be blocked */ }
+
+  // Set today's date if not set
+  var dateEl = document.getElementById('f_date');
+  if (dateEl && !dateEl.value) {
+    try { dateEl.valueAsDate = new Date(); } catch (e) {}
+  }
+
+  // Scroll to toolbar smoothly
+  setTimeout(function() {
+    document.getElementById('toolbar').scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+
+  scheduleSave();
+}
+
+// ============================================================================
+// PHOTO HANDLING
+// ============================================================================
+function addPhotoFromCamera() {
+  document.getElementById('cameraInput').click();
+}
+function addPhotoFromGallery() {
+  document.getElementById('galleryInput').click();
+}
+
+function handlePhotoUpload(event) {
+  var files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  toast('Processing ' + files.length + ' photo(s)...');
+
+  var pending = files.length;
+  for (var i = 0; i < files.length; i++) {
+    compressImage(files[i], function (dataUrl) {
+      photos.push({
+        id: 'p_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+        dataUrl: dataUrl,
+        caption: ''
+      });
+      pending--;
+      if (pending === 0) {
+        renderPhotos();
+        scheduleSave();
+        toast('✓ Photo(s) added', 'success');
+      }
+    });
+  }
+
+  event.target.value = ''; // reset so same file can be re-selected
+}
+
+// Compress image: max ~1600px on longest side, JPEG ~0.8 quality
+function compressImage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var img = new Image();
+    img.onload = function () {
+      var canvas = document.createElement('canvas');
+      var maxDim = 1600;
+      var w = img.width;
+      var h = img.height;
+      if (w > h && w > maxDim) {
+        h = h * (maxDim / w);
+        w = maxDim;
+      } else if (h > maxDim) {
+        w = w * (maxDim / h);
+        h = maxDim;
+      }
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.82));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderPhotos() {
+  var list = document.getElementById('photoList');
+  list.innerHTML = '';
+  for (var i = 0; i < photos.length; i++) {
+    var p = photos[i];
+    var card = document.createElement('div');
+    card.className = 'photo-card';
+    card.innerHTML =
+      '<img src="' + p.dataUrl + '" onclick="openAnnotator(\'' + p.id + '\')" alt="Photo" title="Tap to annotate">' +
+      '<div class="photo-meta">' +
+        '<label style="margin:0">Photo ' + (i + 1) + ' caption</label>' +
+        '<textarea data-photo-id="' + p.id + '" placeholder="Describe what is shown in this photo">' + escapeHtml(p.caption) + '</textarea>' +
+        '<div class="photo-actions">' +
+          '<button onclick="openAnnotator(\'' + p.id + '\')">✎ Annotate</button>' +
+          (i > 0 ? '<button onclick="movePhoto(\'' + p.id + '\', -1)">↑ Up</button>' : '') +
+          (i < photos.length - 1 ? '<button onclick="movePhoto(\'' + p.id + '\', 1)">↓ Down</button>' : '') +
+          '<button class="delete" onclick="deletePhoto(\'' + p.id + '\')">✕ Remove</button>' +
+        '</div>' +
+      '</div>';
+    list.appendChild(card);
+  }
+
+  // Wire caption inputs
+  var captionEls = list.querySelectorAll('textarea[data-photo-id]');
+  for (var j = 0; j < captionEls.length; j++) {
+    captionEls[j].addEventListener('input', function (e) {
+      var id = e.target.getAttribute('data-photo-id');
+      for (var k = 0; k < photos.length; k++) {
+        if (photos[k].id === id) {
+          photos[k].caption = e.target.value;
+          break;
+        }
+      }
+      scheduleSave();
+    });
+  }
+}
+
+function movePhoto(id, direction) {
+  for (var i = 0; i < photos.length; i++) {
+    if (photos[i].id === id) {
+      var newIdx = i + direction;
+      if (newIdx >= 0 && newIdx < photos.length) {
+        var tmp = photos[i];
+        photos[i] = photos[newIdx];
+        photos[newIdx] = tmp;
+        renderPhotos();
+        scheduleSave();
+      }
+      return;
+    }
+  }
+}
+
+function deletePhoto(id) {
+  if (!confirm('Remove this photo from the report?')) return;
+  photos = photos.filter(function (p) { return p.id !== id; });
+  renderPhotos();
+  scheduleSave();
+}
+
+// ============================================================================
+// PHOTO ANNOTATOR
+// ============================================================================
+var annState = {
+  photoId: null,
+  baseImage: null,         // HTMLImageElement of the unannotated original-or-prior-state
+  shapes: [],              // [{type:'arrow'|'circle', x1,y1,x2,y2, color}]
+  tool: 'arrow',
+  color: '#e02020',
+  drawing: false,
+  startX: 0,
+  startY: 0,
+  canvas: null,
+  ctx: null,
+  scale: 1                 // canvas pixel : screen pixel ratio
+};
+
+function openAnnotator(photoId) {
+  var photo = null;
+  for (var i = 0; i < photos.length; i++) {
+    if (photos[i].id === photoId) { photo = photos[i]; break; }
+  }
+  if (!photo) return;
+
+  annState.photoId = photoId;
+  annState.shapes = [];
+  annState.tool = 'arrow';
+  annState.color = '#e02020';
+
+  var img = new Image();
+  img.onload = function () {
+    annState.baseImage = img;
+    var overlay = document.getElementById('annotator');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    annState.canvas = document.getElementById('annCanvas');
+    annState.ctx = annState.canvas.getContext('2d');
+
+    // Set canvas internal size to match image
+    annState.canvas.width = img.width;
+    annState.canvas.height = img.height;
+
+    fitCanvasToWrapper();
+    redrawAnnCanvas();
+    updateAnnToolUI();
+    bindAnnEvents();
+  };
+  img.onerror = function () { toast('Could not open photo for annotation.', 'error'); };
+  img.src = photo.dataUrl;
+}
+
+function fitCanvasToWrapper() {
+  // The CSS handles max-width/max-height to fit within wrapper.
+  // We just need to compute the on-screen scale for pointer events.
+  setTimeout(function () {
+    if (!annState.canvas) return;
+    var rect = annState.canvas.getBoundingClientRect();
+    annState.scale = annState.canvas.width / rect.width;
+  }, 30);
+}
+
+function bindAnnEvents() {
+  var c = annState.canvas;
+  // Remove any previous listeners by cloning would be heavy; just ensure single binding flag
+  if (c._annBound) return;
+  c._annBound = true;
+
+  function getPos(e) {
+    var rect = c.getBoundingClientRect();
+    var clientX, clientY;
+    if (e.touches && e.touches.length) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length) {
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    } else {
+      clientX = e.clientX; clientY = e.clientY;
+    }
+    var scaleX = c.width / rect.width;
+    var scaleY = c.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
+  function down(e) {
+    e.preventDefault();
+    var p = getPos(e);
+    annState.drawing = true;
+    annState.startX = p.x;
+    annState.startY = p.y;
+  }
+  function move(e) {
+    if (!annState.drawing) return;
+    e.preventDefault();
+    var p = getPos(e);
+    redrawAnnCanvas();
+    drawShape(annState.ctx, {
+      type: annState.tool,
+      x1: annState.startX,
+      y1: annState.startY,
+      x2: p.x,
+      y2: p.y,
+      color: annState.color
+    });
+  }
+  function up(e) {
+    if (!annState.drawing) return;
+    e.preventDefault();
+    var p = getPos(e);
+    annState.drawing = false;
+    var dx = p.x - annState.startX;
+    var dy = p.y - annState.startY;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    // Ignore tiny accidental taps (less than ~15px on canvas)
+    if (dist < 15) {
+      redrawAnnCanvas();
+      return;
+    }
+    annState.shapes.push({
+      type: annState.tool,
+      x1: annState.startX,
+      y1: annState.startY,
+      x2: p.x,
+      y2: p.y,
+      color: annState.color
+    });
+    redrawAnnCanvas();
+  }
+
+  c.addEventListener('mousedown', down);
+  c.addEventListener('mousemove', move);
+  c.addEventListener('mouseup', up);
+  c.addEventListener('mouseleave', up);
+  c.addEventListener('touchstart', down, { passive: false });
+  c.addEventListener('touchmove', move, { passive: false });
+  c.addEventListener('touchend', up, { passive: false });
+  c.addEventListener('touchcancel', up, { passive: false });
+}
+
+function redrawAnnCanvas() {
+  if (!annState.ctx || !annState.baseImage) return;
+  var ctx = annState.ctx;
+  ctx.clearRect(0, 0, annState.canvas.width, annState.canvas.height);
+  ctx.drawImage(annState.baseImage, 0, 0);
+  for (var i = 0; i < annState.shapes.length; i++) {
+    drawShape(ctx, annState.shapes[i]);
+  }
+}
+
+function drawShape(ctx, shape) {
+  // Stroke width scales with image size — about 0.7% of the longer edge
+  var longer = Math.max(annState.canvas.width, annState.canvas.height);
+  var sw = Math.max(4, Math.round(longer * 0.007));
+  var outline = sw + Math.max(2, Math.round(sw * 0.5));
+
+  // Outline (contrast color) drawn first
+  var contrast = (shape.color === '#ffffff') ? '#000000' : '#ffffff';
+
+  if (shape.type === 'arrow') {
+    drawArrow(ctx, shape.x1, shape.y1, shape.x2, shape.y2, contrast, outline);
+    drawArrow(ctx, shape.x1, shape.y1, shape.x2, shape.y2, shape.color, sw);
+  } else if (shape.type === 'circle') {
+    drawCircle(ctx, shape.x1, shape.y1, shape.x2, shape.y2, contrast, outline);
+    drawCircle(ctx, shape.x1, shape.y1, shape.x2, shape.y2, shape.color, sw);
+  }
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, lineWidth) {
+  var headLen = lineWidth * 4;
+  var angle = Math.atan2(y2 - y1, x2 - x1);
+
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Shaft (stop short of arrow tip so the head looks clean)
+  var shaftEndX = x2 - Math.cos(angle) * (headLen * 0.6);
+  var shaftEndY = y2 - Math.sin(angle) * (headLen * 0.6);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(shaftEndX, shaftEndY);
+  ctx.stroke();
+
+  // Arrow head (triangle)
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(
+    x2 - headLen * Math.cos(angle - Math.PI / 6),
+    y2 - headLen * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    x2 - headLen * Math.cos(angle + Math.PI / 6),
+    y2 - headLen * Math.sin(angle + Math.PI / 6)
+  );
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawCircle(ctx, x1, y1, x2, y2, color, lineWidth) {
+  // Treat the drag rect as the bounding box of an ellipse
+  var cx = (x1 + x2) / 2;
+  var cy = (y1 + y2) / 2;
+  var rx = Math.abs(x2 - x1) / 2;
+  var ry = Math.abs(y2 - y1) / 2;
+  if (rx < 4 || ry < 4) return;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function setAnnTool(tool) {
+  annState.tool = tool;
+  updateAnnToolUI();
+}
+function setAnnColor(color) {
+  annState.color = color;
+  updateAnnToolUI();
+}
+function updateAnnToolUI() {
+  var toolButtons = document.querySelectorAll('.ann-btn[data-tool]');
+  for (var i = 0; i < toolButtons.length; i++) {
+    toolButtons[i].classList.toggle('active', toolButtons[i].getAttribute('data-tool') === annState.tool);
+  }
+  var colorButtons = document.querySelectorAll('.ann-color');
+  for (var j = 0; j < colorButtons.length; j++) {
+    colorButtons[j].classList.toggle('active', colorButtons[j].getAttribute('data-color') === annState.color);
+  }
+}
+
+function undoAnnotation() {
+  if (annState.shapes.length === 0) return;
+  annState.shapes.pop();
+  redrawAnnCanvas();
+}
+function clearAnnotations() {
+  if (annState.shapes.length === 0) return;
+  if (!confirm('Clear all markup on this photo?')) return;
+  annState.shapes = [];
+  redrawAnnCanvas();
+}
+
+function closeAnnotator(saveChanges) {
+  var overlay = document.getElementById('annotator');
+  if (saveChanges && annState.shapes.length > 0) {
+    // Flatten the canvas into the photo's dataUrl
+    var newDataUrl = annState.canvas.toDataURL('image/jpeg', 0.85);
+    for (var i = 0; i < photos.length; i++) {
+      if (photos[i].id === annState.photoId) {
+        photos[i].dataUrl = newDataUrl;
+        break;
+      }
+    }
+    renderPhotos();
+    scheduleSave();
+    toast('✓ Markup saved to photo', 'success');
+  } else if (saveChanges) {
+    toast('No markup added', null, 2000);
+  }
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden', 'true');
+
+  // Reset state
+  annState.photoId = null;
+  annState.baseImage = null;
+  annState.shapes = [];
+  annState.canvas = null;
+  annState.ctx = null;
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// ============================================================================
+// AUTO-SAVE / RESTORE
+// ============================================================================
+function getAllFieldData() {
+  var fields = {};
+  var inputs = document.querySelectorAll('#reportBody input, #reportBody textarea, #reportBody select');
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].id) fields[inputs[i].id] = inputs[i].value;
+  }
+  return fields;
+}
+
+function setAllFieldData(fields) {
+  if (!fields) return;
+  for (var id in fields) {
+    var el = document.getElementById(id);
+    if (el) el.value = fields[id];
+  }
+}
+
+function scheduleSave() {
+  document.getElementById('saveStatus').textContent = 'Saving...';
+  document.getElementById('saveStatus').classList.remove('saved');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDraft, 800);
+}
+
+function saveDraft() {
+  try {
+    var draft = {
+      type: inspectionType,
+      fields: getAllFieldData(),
+      photos: photos,
+      saved: new Date().toISOString(),
+      currentSavedReportId: currentSavedReportId
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+
+    // Save inspector/prepared-by prefs separately
+    var inspector = document.getElementById('f_inspector');
+    var preparedBy = document.getElementById('f_prepared_by');
+    if (inspector && inspector.value) localStorage.setItem(INSPECTOR_PREF_KEY, inspector.value);
+    if (preparedBy && preparedBy.value) localStorage.setItem(PREPARED_BY_PREF_KEY, preparedBy.value);
+
+    document.getElementById('saveStatus').textContent = '✓ Draft saved';
+    document.getElementById('saveStatus').classList.add('saved');
+  } catch (e) {
+    console.error('Save failed:', e);
+    document.getElementById('saveStatus').textContent = '⚠ Save failed (storage full?)';
+  }
+}
+
+function loadDraft() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    var draft = JSON.parse(raw);
+    if (!draft || !draft.type) return false;
+
+    if (!confirm('Resume your previous draft?\n\nLast saved: ' + new Date(draft.saved).toLocaleString() + '\n\nClick OK to resume, Cancel to start fresh.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      return false;
+    }
+
+    setInspectionType(draft.type);
+    setAllFieldData(draft.fields);
+    photos = draft.photos || [];
+    currentSavedReportId = draft.currentSavedReportId || null;
+    renderPhotos();
+    toast('Draft restored', 'success');
+    return true;
+  } catch (e) {
+    console.error('Load failed:', e);
+    return false;
+  }
+}
+
+function clearReport() {
+  if (!confirm('Clear all fields and photos and start a new inspection?\n\nThis cannot be undone.')) return;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  photos = [];
+  inspectionType = null;
+  currentSavedReportId = null; // start fresh — next save creates a new archive record
+  var inputs = document.querySelectorAll('#reportBody input, #reportBody textarea, #reportBody select');
+  for (var i = 0; i < inputs.length; i++) inputs[i].value = '';
+  renderPhotos();
+  document.getElementById('toolbar').style.display = 'none';
+  document.getElementById('reportBody').style.display = 'none';
+  var buttons = document.querySelectorAll('.type-btn');
+  for (var j = 0; j < buttons.length; j++) buttons[j].classList.remove('active');
+  document.getElementById('saveStatus').textContent = 'Auto-save ready';
+  document.getElementById('saveStatus').classList.remove('saved');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ============================================================================
+// PDF GENERATION (using jsPDF)
+// ============================================================================
+async function generatePDFBlob() {
+  if (typeof window.jspdf === 'undefined') {
+    throw new Error('PDF library not loaded. Check internet connection.');
+  }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+  var pageWidth = doc.internal.pageSize.getWidth();
+  var pageHeight = doc.internal.pageSize.getHeight();
+  var margin = 50;
+  var contentWidth = pageWidth - (margin * 2);
+  var y = margin;
+
+  function newPage() {
+    doc.addPage();
+    y = margin;
+  }
+  function ensureSpace(h) {
+    if (y + h > pageHeight - margin) newPage();
+  }
+  function addText(text, opts) {
+    opts = opts || {};
+    doc.setFont(opts.font || 'helvetica', opts.style || 'normal');
+    doc.setFontSize(opts.size || 11);
+    if (opts.color) doc.setTextColor(opts.color[0], opts.color[1], opts.color[2]);
+    else doc.setTextColor(23, 35, 29);
+    var lines = doc.splitTextToSize(text || '', contentWidth);
+    var lineHeight = (opts.size || 11) * 1.35;
+    ensureSpace(lines.length * lineHeight);
+    for (var i = 0; i < lines.length; i++) {
+      ensureSpace(lineHeight);
+      doc.text(lines[i], margin, y);
+      y += lineHeight;
+    }
+    y += (opts.spaceAfter || 4);
+  }
+  function addHeading(text) {
+    y += 6;
+    ensureSpace(28);
+    doc.setFillColor(0, 92, 52);
+    doc.rect(margin, y - 2, contentWidth, 22, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(text.toUpperCase(), margin + 8, y + 14);
+    y += 30;
+  }
+  function addLabelValue(label, value) {
+    if (!value || value === '—' || value === '') return;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(0, 92, 52);
+    var labelW = doc.getTextWidth(label + ': ');
+    ensureSpace(16);
+    doc.text(label + ':', margin, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(23, 35, 29);
+    var lines = doc.splitTextToSize(value, contentWidth - labelW);
+    for (var i = 0; i < lines.length; i++) {
+      if (i > 0) ensureSpace(14);
+      doc.text(lines[i], margin + labelW, y);
+      if (i < lines.length - 1) y += 14;
+    }
+    y += 16;
+  }
+  function f(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; }
+
+  // ---- Letterhead ----
+  doc.setFillColor(0, 92, 52);
+  doc.rect(0, 0, pageWidth, 6, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(0, 92, 52);
+  doc.text('CENTURY ROOF & SOLAR', margin, y + 12);
+  y += 22;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(93, 107, 99);
+  doc.text('23135 Saklan Road, Hayward, CA 94545  •  Phone: (510) 780-9489  •  Fax: (510) 784-0421', margin, y);
+  y += 12;
+  doc.text('www.centuryrooftile.com  •  License: 721502', margin, y);
+  y += 18;
+
+  doc.setDrawColor(0, 92, 52);
+  doc.setLineWidth(2);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 16;
+
+  // ---- Title ----
+  var titles = {
+    gaf: 'GAF Warranty Claim — Roof Inspection',
+    general: 'Roof Inspection Report',
+    realestate: 'Real Estate Roof Inspection Report'
+  };
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(23, 35, 29);
+  doc.text(titles[inspectionType] || 'Roof Inspection Report', margin, y);
+  y += 22;
+
+  // ---- Date row ----
+  addLabelValue('Date of Report', f('f_date'));
+  addLabelValue('Date of Site Visit', f('f_visit_date'));
+  addLabelValue('Time of Visit', f('f_visit_time'));
+
+  // ---- GAF section ----
+  if (inspectionType === 'gaf') {
+    addHeading('GAF Warranty Claim Information');
+    addLabelValue('GAF Agent', f('f_gaf_agent'));
+    addLabelValue('GAF Agent Phone', f('f_gaf_phone'));
+    addLabelValue('GAF Claim #', f('f_gaf_claim'));
+    addLabelValue('Golden Pledge Warranty #', f('f_gaf_warranty'));
+  }
+
+  // ---- Client info (gaf, general) ----
+  if (inspectionType === 'gaf' || inspectionType === 'general') {
+    addHeading('Client Information');
+    addLabelValue('Resident / Customer', f('f_resident_name'));
+    addLabelValue('Phone', f('f_resident_phone'));
+    addLabelValue('Street Address', f('f_address'));
+    addLabelValue('City, State, Zip', f('f_city'));
+    addLabelValue('Scope of Work', f('f_scope'));
+    addLabelValue('Job Location', f('f_job_location'));
+    addLabelValue('Person Met On Site', f('f_contact_person'));
+    addLabelValue('Roof Type', f('f_roof_type'));
+    addLabelValue('Estimated Age of Roof', f('f_roof_age'));
+  }
+
+  // ---- Real estate info ----
+  if (inspectionType === 'realestate') {
+    addHeading('Real Estate Inspection Information');
+    addLabelValue('Escrow Number', f('f_re_escrow'));
+    addLabelValue('Phone', f('f_re_phone'));
+    addLabelValue('Real Estate Agent', f('f_re_agent'));
+    addLabelValue('Contact Name', f('f_re_contact'));
+    addLabelValue('Type of Roof', f('f_re_roof_type'));
+    addLabelValue('Approximate Age of Roof', f('f_re_age'));
+    addLabelValue('Report Address', f('f_re_address'));
+  }
+
+  // ---- Observations (gaf, general) ----
+  if (inspectionType === 'gaf' || inspectionType === 'general') {
+    addHeading('Observations');
+    if (f('f_problem_location')) {
+      addText('Location of Problem:', { style: 'bold', size: 10, color: [0, 92, 52], spaceAfter: 2 });
+      addText(f('f_problem_location'), { spaceAfter: 8 });
+    }
+    if (f('f_cause')) {
+      addText('Cause / Findings:', { style: 'bold', size: 10, color: [0, 92, 52], spaceAfter: 2 });
+      addText(f('f_cause'), { spaceAfter: 8 });
+    }
+    if (inspectionType === 'general' && f('f_remedy')) {
+      addText('Remedy / Recommended Repairs:', { style: 'bold', size: 10, color: [0, 92, 52], spaceAfter: 2 });
+      addText(f('f_remedy'), { spaceAfter: 8 });
+    }
+    if (f('f_other')) {
+      addText('Other Observations:', { style: 'bold', size: 10, color: [0, 92, 52], spaceAfter: 2 });
+      addText(f('f_other'), { spaceAfter: 8 });
+    }
+  }
+
+  // ---- Real Estate findings ----
+  if (inspectionType === 'realestate') {
+    addHeading('Findings');
+    if (f('f_re_findings')) addText(f('f_re_findings'), { spaceAfter: 10 });
+  }
+
+  // ---- Photos ----
+  if (photos.length > 0) {
+    addHeading('Photo Documentation');
+    for (var i = 0; i < photos.length; i++) {
+      var photo = photos[i];
+      // Calculate image size to fit
+      var imgWidth = contentWidth;
+      var imgHeight = (imgWidth * 3) / 4; // assume 4:3 ratio for sizing
+      // Get actual ratio
+      try {
+        var sizes = await getImageDimensions(photo.dataUrl);
+        var ratio = sizes.h / sizes.w;
+        imgHeight = imgWidth * ratio;
+        // Cap at 60% of page height
+        var maxH = pageHeight * 0.55;
+        if (imgHeight > maxH) {
+          imgHeight = maxH;
+          imgWidth = imgHeight / ratio;
+        }
+      } catch (e) { /* fallback to default */ }
+
+      var captionLines = photo.caption ? doc.splitTextToSize('Photo ' + (i + 1) + ': ' + photo.caption, contentWidth) : ['Photo ' + (i + 1)];
+      var captionH = captionLines.length * 13 + 8;
+
+      ensureSpace(imgHeight + captionH + 10);
+      doc.addImage(photo.dataUrl, 'JPEG', margin, y, imgWidth, imgHeight);
+      y += imgHeight + 6;
+
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(10);
+      doc.setTextColor(93, 107, 99);
+      for (var c = 0; c < captionLines.length; c++) {
+        doc.text(captionLines[c], margin, y);
+        y += 13;
+      }
+      y += 8;
+    }
+  }
+
+  // ---- Conclusion ----
+  if ((inspectionType === 'gaf' || inspectionType === 'general') && f('f_conclusion')) {
+    addHeading('Conclusion');
+    addText(f('f_conclusion'), { spaceAfter: 10 });
+  }
+
+  // ---- Signature ----
+  y += 10;
+  ensureSpace(60);
+  doc.setDrawColor(184, 208, 194);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, pageWidth - margin, y);
+  y += 14;
+
+  if (f('f_inspector')) {
+    addText('Inspector: ' + f('f_inspector'), { style: 'bold', size: 10, spaceAfter: 4 });
+  }
+  if (f('f_prepared_by')) {
+    addText('Report prepared by: ' + f('f_prepared_by'), { style: 'bold', size: 10, spaceAfter: 4 });
+  }
+  addText('Century Roof and Solar, Inc.', { size: 10 });
+
+  // ---- Limitations & Disclaimers (every report, at the end) ----
+  // Force a new page so disclaimers always start fresh and are clearly separated
+  doc.addPage();
+  y = margin;
+
+  addHeading('Limitations & Disclaimers');
+  addText('The following limitations and disclaimers apply to this inspection report and are an integral part of it. By accepting this report, the recipient acknowledges these limitations.', { size: 9, color: [93, 107, 99], spaceAfter: 12 });
+
+  var disclaimers = getDisclaimersForType(inspectionType);
+  for (var d = 0; d < disclaimers.length; d++) {
+    var num = (d + 1) + '. ';
+    var title = disclaimers[d][0];
+    var body = disclaimers[d][1];
+
+    // Title line (green, bold)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(0, 92, 52);
+    var titleText = num + title;
+    var titleLines = doc.splitTextToSize(titleText, contentWidth);
+    var titleH = titleLines.length * 13;
+    ensureSpace(titleH + 8);
+    for (var tl = 0; tl < titleLines.length; tl++) {
+      doc.text(titleLines[tl], margin, y);
+      y += 13;
+    }
+
+    // Body text (normal)
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(23, 35, 29);
+    var bodyLines = doc.splitTextToSize(body, contentWidth - 12);
+    var lineH = 12;
+    for (var bl = 0; bl < bodyLines.length; bl++) {
+      ensureSpace(lineH);
+      doc.text(bodyLines[bl], margin + 12, y);
+      y += lineH;
+    }
+    y += 8;
+  }
+
+  return doc.output('blob');
+}
+
+function getImageDimensions(dataUrl) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    img.onload = function () { resolve({ w: img.width, h: img.height }); };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+function buildPDFFilename() {
+  var typeLabel = { gaf: 'GAF', general: 'Inspection', realestate: 'RealEstate' }[inspectionType] || 'Inspection';
+  var customer = (document.getElementById('f_resident_name') || {}).value
+                 || (document.getElementById('f_re_address') || {}).value
+                 || 'Report';
+  customer = customer.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  var date = (document.getElementById('f_date') || {}).value || new Date().toISOString().slice(0, 10);
+  return 'Century-' + typeLabel + '-' + customer + '-' + date + '.pdf';
+}
+
+// ============================================================================
+// PDF DOWNLOAD
+// ============================================================================
+async function downloadPDF() {
+  if (!validateRequired()) return;
+  toast('Generating PDF...');
+  try {
+    var blob = await generatePDFBlob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = buildPDFFilename();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    toast('✓ PDF saved to your device', 'success');
+
+    // Also archive to Airtable in the background (silently — don't block on it)
+    if (airtableConfigured()) {
+      saveReportToAirtable().then(function (id) {
+        if (id) console.log('Archived to Airtable:', id);
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    toast('PDF generation failed: ' + e.message, 'error', 5000);
+  }
+}
+
+// ============================================================================
+// EMAIL (mailto - text only fallback)
+// ============================================================================
+function emailReport() {
+  if (!validateRequired()) return;
+  var typeLabel = { gaf: 'GAF Warranty Claim', general: 'Roof Inspection', realestate: 'Real Estate Inspection' }[inspectionType] || 'Inspection';
+  var customer = document.getElementById('f_resident_name').value
+                 || document.getElementById('f_re_address').value
+                 || 'Report';
+  var subject = 'Century Roof & Solar - ' + typeLabel + ' - ' + customer;
+
+  var body = 'Hello,\n\nPlease find attached the ' + typeLabel + ' report from Century Roof & Solar.\n\n';
+  body += 'Customer / Address: ' + customer + '\n';
+  body += 'Date: ' + (document.getElementById('f_date').value || '') + '\n\n';
+  body += 'NOTE: Please attach the PDF report you saved using the "Save as PDF" button.\n\n';
+  body += 'If you have any questions, please contact us at (510) 780-9489.\n\n';
+  body += 'Sincerely,\n' + (document.getElementById('f_prepared_by').value || 'Century Roof & Solar') + '\nCentury Roof and Solar, Inc.';
+
+  var to = document.getElementById('f_email_to').value || '';
+  var cc = document.getElementById('f_email_cc').value || '';
+  var url = 'mailto:' + encodeURIComponent(to);
+  var params = [];
+  if (cc) params.push('cc=' + encodeURIComponent(cc));
+  params.push('subject=' + encodeURIComponent(subject));
+  params.push('body=' + encodeURIComponent(body));
+  url += '?' + params.join('&');
+  window.location.href = url;
+
+  toast('Email opened. Remember to attach the PDF.', null, 5000);
+}
+
+// ============================================================================
+// SEND VIA FORMSPREE (PDF attached)
+// ============================================================================
+async function sendViaFormspree() {
+  if (!validateRequired()) return;
+
+  var to = document.getElementById('f_email_to').value;
+  if (!to) {
+    toast('Enter a "Send Report To" email address before sending.', 'error', 4500);
+    document.getElementById('f_email_to').focus();
+    return;
+  }
+
+  var customer = document.getElementById('f_resident_name').value
+                 || document.getElementById('f_re_address').value
+                 || 'Report';
+
+  if (!confirm('Send the report via email?\n\nTo: ' + to + '\nCustomer: ' + customer + '\n\nThis will email the PDF directly.')) return;
+
+  var btn = document.querySelector('.btn-send');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  try {
+    toast('Generating PDF...');
+    var blob = await generatePDFBlob();
+    var filename = buildPDFFilename();
+    var typeLabel = { gaf: 'GAF Warranty Claim', general: 'Roof Inspection', realestate: 'Real Estate Inspection' }[inspectionType] || 'Inspection';
+
+    toast('Sending report...');
+
+    var formData = new FormData();
+    formData.append('_subject', 'Century Roof & Solar - ' + typeLabel + ' - ' + customer);
+    formData.append('Report_Type', typeLabel);
+    formData.append('Customer', customer);
+    formData.append('Date', document.getElementById('f_date').value || '');
+    formData.append('Send_To', to);
+    formData.append('CC', document.getElementById('f_email_cc').value || '');
+    formData.append('Inspector', document.getElementById('f_inspector').value || '');
+    formData.append('Prepared_By', document.getElementById('f_prepared_by').value || '');
+    formData.append('attachment', blob, filename);
+
+    var response = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      toast('✓ Report sent successfully!', 'success', 5000);
+
+      // Also archive to Airtable in the background
+      if (airtableConfigured()) {
+        saveReportToAirtable().then(function (id) {
+          if (id) console.log('Archived to Airtable:', id);
+        });
+      }
+    } else {
+      var errText = await response.text();
+      console.error('Formspree error:', errText);
+      toast('Send failed (status ' + response.status + '). See console.', 'error', 6000);
+    }
+  } catch (e) {
+    console.error(e);
+    toast('Send failed: ' + e.message, 'error', 6000);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Send Report'; }
+  }
+}
+
+function validateRequired() {
+  if (!inspectionType) {
+    toast('Pick an inspection type first.', 'error');
+    return false;
+  }
+  // Require at least an address-ish identifier
+  var addr = document.getElementById('f_address').value
+             || document.getElementById('f_re_address').value
+             || document.getElementById('f_resident_name').value;
+  if (!addr) {
+    toast('Enter at least a customer name or address before generating.', 'error', 4500);
+    return false;
+  }
+  return true;
+}
+
+// ============================================================================
+// AIRTABLE INTEGRATION (Saved Reports)
+// ============================================================================
+var savedReportsCache = []; // [{id, fields, createdTime}] from Airtable
+
+async function airtableFetch(path, options) {
+  options = options || {};
+  if (!airtableConfigured()) {
+    throw new Error('Airtable is not configured. Edit AIRTABLE_API_KEY and AIRTABLE_BASE_ID in the HTML file.');
+  }
+  var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE_ID + '/' + encodeURIComponent(AIRTABLE_TABLE_NAME) + path;
+  var headers = {
+    'Authorization': 'Bearer ' + AIRTABLE_API_KEY,
+    'Content-Type': 'application/json'
+  };
+  options.headers = Object.assign({}, headers, options.headers || {});
+  var response = await fetch(url, options);
+  if (!response.ok) {
+    var errText = await response.text();
+    throw new Error('Airtable error ' + response.status + ': ' + errText);
+  }
+  return response.json();
+}
+
+// Build the report payload that gets stored in Airtable
+function buildReportPayload() {
+  var customer = document.getElementById('f_resident_name').value
+                 || document.getElementById('f_re_address').value
+                 || 'Unknown';
+  var address = document.getElementById('f_address').value
+                || document.getElementById('f_re_address').value
+                || '';
+  var typeLabel = { gaf: 'GAF', general: 'General', realestate: 'Real Estate' }[inspectionType] || inspectionType;
+  var dateValue = document.getElementById('f_date').value || new Date().toISOString().slice(0, 10);
+
+  // Bundle all fields into a JSON blob (Airtable long-text field)
+  var allFields = getAllFieldData();
+
+  // Bundle photos as JSON blob too
+  var photosJson = JSON.stringify(photos);
+
+  return {
+    fields: {
+      'Customer': customer,
+      'Address': address,
+      'Report Type': typeLabel,
+      'Report Date': dateValue,
+      'Inspection Type Code': inspectionType,
+      'Field Data': JSON.stringify(allFields),
+      'Photos Data': photosJson,
+      'Last Updated': new Date().toISOString()
+    }
+  };
+}
+
+// Create or update a report in Airtable.
+// Returns the saved record ID.
+var currentSavedReportId = null; // when editing, this is set so we update instead of insert
+
+async function saveReportToAirtable() {
+  if (!airtableConfigured()) return null;
+  try {
+    var payload = buildReportPayload();
+    if (currentSavedReportId) {
+      // Update existing
+      var updated = await airtableFetch('/' + currentSavedReportId, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+      });
+      return updated.id;
+    } else {
+      // Create new
+      var created = await airtableFetch('', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      currentSavedReportId = created.id;
+      return created.id;
+    }
+  } catch (e) {
+    console.error('Airtable save failed:', e);
+    toast('Could not save to archive: ' + e.message, 'error', 5000);
+    return null;
+  }
+}
+
+async function loadReportsFromAirtable() {
+  if (!airtableConfigured()) {
+    document.getElementById('reportsStatus').innerHTML =
+      '<div class="reports-config-warning">' +
+      '<strong>⚠ Airtable not configured yet</strong>' +
+      'To use Saved Reports, follow the SETUP-GUIDE.md instructions to set up your Airtable account, then paste your API key and Base ID into the HTML file.' +
+      '</div>';
+    return;
+  }
+  document.getElementById('reportsStatus').textContent = 'Loading reports...';
+  document.getElementById('reportsList').innerHTML = '';
+
+  try {
+    // Fetch up to 100 most recent
+    var data = await airtableFetch('?sort%5B0%5D%5Bfield%5D=Last%20Updated&sort%5B0%5D%5Bdirection%5D=desc&pageSize=100');
+    savedReportsCache = data.records || [];
+    renderReportsList(savedReportsCache);
+  } catch (e) {
+    console.error(e);
+    document.getElementById('reportsStatus').textContent = 'Failed to load reports: ' + e.message;
+  }
+}
+
+function renderReportsList(records) {
+  var statusEl = document.getElementById('reportsStatus');
+  var listEl = document.getElementById('reportsList');
+
+  if (!records || records.length === 0) {
+    statusEl.textContent = 'No saved reports yet. Reports are saved automatically when you tap "Save as PDF" or "Send Report".';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  statusEl.textContent = records.length + ' report' + (records.length === 1 ? '' : 's') + ' saved';
+  var html = '';
+  for (var i = 0; i < records.length; i++) {
+    var rec = records[i];
+    var f = rec.fields || {};
+    var customer = f['Customer'] || 'Unknown';
+    var address = f['Address'] || '';
+    var type = f['Report Type'] || '';
+    var date = f['Report Date'] || '';
+    var lastUpdated = f['Last Updated'] ? new Date(f['Last Updated']).toLocaleDateString() : '';
+
+    html += '<div class="report-item">' +
+      '<div class="report-item-info">' +
+        '<div class="report-item-title">' + escapeHtmlText(type) + ' — ' + escapeHtmlText(customer) + '</div>' +
+        '<div class="report-item-meta">' +
+          (address ? escapeHtmlText(address) + ' • ' : '') +
+          'Date: ' + escapeHtmlText(date) +
+          (lastUpdated ? ' • Updated: ' + lastUpdated : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="report-item-actions">' +
+        '<button class="open-btn" onclick="openSavedReport(\'' + rec.id + '\')">Open &amp; Edit</button>' +
+        '<button class="delete-btn" onclick="deleteSavedReport(\'' + rec.id + '\')">🗑️</button>' +
+      '</div>' +
+    '</div>';
+  }
+  listEl.innerHTML = html;
+}
+
+function filterReports() {
+  var term = (document.getElementById('reportsSearch').value || '').toLowerCase().trim();
+  if (!term) {
+    renderReportsList(savedReportsCache);
+    return;
+  }
+  var filtered = savedReportsCache.filter(function (rec) {
+    var f = rec.fields || {};
+    var hay = (
+      (f['Customer'] || '') + ' ' +
+      (f['Address'] || '') + ' ' +
+      (f['Report Type'] || '') + ' ' +
+      (f['Report Date'] || '')
+    ).toLowerCase();
+    return hay.indexOf(term) !== -1;
+  });
+  renderReportsList(filtered);
+}
+
+async function openSavedReport(recordId) {
+  // Find in cache
+  var rec = null;
+  for (var i = 0; i < savedReportsCache.length; i++) {
+    if (savedReportsCache[i].id === recordId) { rec = savedReportsCache[i]; break; }
+  }
+  if (!rec) { toast('Report not found.', 'error'); return; }
+
+  if (!confirm('Open this report for editing?\n\nIf you have unsaved work in the current report, it will be replaced.')) return;
+
+  try {
+    var f = rec.fields || {};
+    var typeCode = f['Inspection Type Code'] || 'general';
+    var fieldData = f['Field Data'] ? JSON.parse(f['Field Data']) : {};
+    var photosData = f['Photos Data'] ? JSON.parse(f['Photos Data']) : [];
+
+    // Set up the report
+    setInspectionType(typeCode);
+    setAllFieldData(fieldData);
+    photos = photosData || [];
+    renderPhotos();
+
+    // Track this as the "current" record so future saves update it instead of creating new
+    currentSavedReportId = recordId;
+
+    // Save state to draft as well
+    scheduleSave();
+
+    closeSavedReports();
+    toast('✓ Report loaded for editing', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Could not load this report: ' + e.message, 'error', 5000);
+  }
+}
+
+async function deleteSavedReport(recordId) {
+  if (!confirm('Permanently delete this report from your archive?\n\nThis cannot be undone.')) return;
+  try {
+    await airtableFetch('/' + recordId, { method: 'DELETE' });
+    savedReportsCache = savedReportsCache.filter(function (r) { return r.id !== recordId; });
+    renderReportsList(savedReportsCache);
+    toast('Report deleted', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Delete failed: ' + e.message, 'error', 5000);
+  }
+}
+
+function openSavedReports() {
+  var modal = document.getElementById('reportsModal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  document.getElementById('reportsSearch').value = '';
+  loadReportsFromAirtable();
+}
+
+function closeSavedReports() {
+  var modal = document.getElementById('reportsModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+}
+document.addEventListener('DOMContentLoaded', function () {
+  // Wire up auto-save on all field changes
+  document.addEventListener('input', function (e) {
+    if (e.target.matches('#reportBody input, #reportBody textarea, #reportBody select')) {
+      scheduleSave();
+    }
+  });
+  document.addEventListener('change', function (e) {
+    if (e.target.matches('#reportBody input, #reportBody textarea, #reportBody select')) {
+      scheduleSave();
+    }
+  });
+
+  // Try to restore previous draft
+  loadDraft();
+});
+</script>
+
+</body>
+</html>
