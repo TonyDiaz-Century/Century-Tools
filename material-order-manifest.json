@@ -1,0 +1,24 @@
+{
+  "name": "Century Material Orders",
+  "short_name": "Material Orders",
+  "description": "Century Roof & Solar – Material Order Form v1.0 CRS-MOF",
+  "start_url": "/Century-Tools/material-order-form.html",
+  "display": "standalone",
+  "background_color": "#1e5428",
+  "theme_color": "#1e5428",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/Century-Tools/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Century-Tools/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
