@@ -2017,15 +2017,15 @@ async function saveOrder(silent = false) {
   updateSaveIndicator('', 'Saving…');
 
   try {
-    // Fields matching Table 1 in Century Procurement
+    // JobName is the primary field in Table 1
     const fields = {
+      'JobName':        d.job || '(no job)',
       'PONumber':       d.po || '',
+      'OrderDate':      d.date || '',
+      'JobAddress':     d.address || '',
+      'Supplier':       d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
       'Vendor':         d.vendor || '',
       'OrderedBy':      d.orderedBy || '',
-      'JobName':        d.job || '',
-      'JobAddress':     d.address || '',
-      'OrderDate':      d.date || '',
-      'Supplier':       d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
       'Status':         currentStatus,
       'Notes':          d.notes || '',
       'Version':        'v1.0-CRS-MOF',
@@ -2178,7 +2178,7 @@ async function loadOrderFromAirtable(airtableId) {
     document.getElementById('poNumber').value   = f['PONumber']    || '';
     document.getElementById('orderDate').value  = f['OrderDate']   || '';
     document.getElementById('orderedBy').value  = f['OrderedBy']   || '';
-    document.getElementById('jobName').value    = f['JobName']     || '';
+    document.getElementById('jobName').value    = f['JobName']  !== '(no job)' ? f['JobName'] || '' : '';
     document.getElementById('jobAddress').value = f['JobAddress']  || '';
     document.getElementById('vendor').value     = f['Vendor']      || '';
     document.getElementById('orderNotes').value = f['Notes']       || '';
