@@ -1934,7 +1934,7 @@ function resetForm() {
 // ── AIRTABLE CONFIG ───────────────────────────────────────────
 const AT_TOKEN = 'patZMOjIXsZ40w3UT.5a5a55a1c0fd7577b59cf3e557ae0375b304fa69c89516ec2906c79956472eb0';
 const AT_BASE  = 'appDcGUhTCynhCupJ';
-const AT_TABLE = 'MaterialOrders';
+const AT_TABLE = 'Table 1';
 
 async function airtableRequest(method, path, body) {
   const res = await fetch(`https://api.airtable.com/v0/${AT_BASE}/${encodeURIComponent(path)}`, {
@@ -2017,24 +2017,22 @@ async function saveOrder(silent = false) {
   updateSaveIndicator('', 'Saving…');
 
   try {
-    // Fields matching actual Airtable table structure
+    // Fields matching Table 1 in Century Procurement
     const fields = {
-      'OrderDate':         d.date || '',
-      'PONumber':          d.po || '',
-      'JobName':           d.job || '',
-      'JobAddress':        d.address || '',
-      'Supplier':          d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
-      'Vendor':            d.vendor || '',
-      'OrderedBy':         d.orderedBy || '',
-      'Status':            currentStatus,
-      'Notes':             d.notes || '',
-      'Version':           'v1.0-CRS-MOF',
-      'ItemsJSON':         JSON.stringify(tableRows),
-      'LastModifiedBy':    user,
-      'LastModifiedAt':    now,
+      'PONumber':       d.po || '',
+      'Vendor':         d.vendor || '',
+      'OrderedBy':      d.orderedBy || '',
+      'JobName':        d.job || '',
+      'JobAddress':     d.address || '',
+      'OrderDate':      d.date || '',
+      'Supplier':       d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
+      'Status':         currentStatus,
+      'Notes':          d.notes || '',
+      'Version':        'v1.0-CRS-MOF',
+      'ItemsJSON':      JSON.stringify(tableRows),
+      'LastModifiedBy': user,
+      'LastModifiedAt': now,
     };
-
-    // Only add CreatedBy on new records
     if (!currentAirtableId) fields['CreatedBy'] = user;
 
     let result;
