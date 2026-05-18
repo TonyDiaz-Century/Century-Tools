@@ -2017,17 +2017,17 @@ async function saveOrder(silent = false) {
   updateSaveIndicator('', 'Saving…');
 
   try {
-    // Use 'Name' as the primary field (Airtable default) = PO Number
+    // Fields matching actual Airtable table structure
     const fields = {
-      'Name':              d.po || '(no PO)',
-      'Notes':             d.notes || '',
-      'Status':            currentStatus,
       'OrderDate':         d.date || '',
+      'PONumber':          d.po || '',
       'JobName':           d.job || '',
       'JobAddress':        d.address || '',
       'Supplier':          d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
       'Vendor':            d.vendor || '',
       'OrderedBy':         d.orderedBy || '',
+      'Status':            currentStatus,
+      'Notes':             d.notes || '',
       'Version':           'v1.0-CRS-MOF',
       'ItemsJSON':         JSON.stringify(tableRows),
       'LastModifiedBy':    user,
@@ -2122,7 +2122,7 @@ function renderOrdersTable(records) {
     filtered = records.filter(r => {
       const f = r.fields || {};
       return (
-        (f['Name']||'').toLowerCase().includes(ordersFilterText) ||
+        (f['PONumber']||'').toLowerCase().includes(ordersFilterText) ||
         (f['JobName']||'').toLowerCase().includes(ordersFilterText) ||
         (f['Supplier']||'').toLowerCase().includes(ordersFilterText) ||
         (f['Status']||'').toLowerCase().includes(ordersFilterText) ||
@@ -2152,7 +2152,7 @@ function renderOrdersTable(records) {
     const modInfo = `${modBy}<br><span style="font-size:10px;color:var(--gray-400)">${modAt}</span>`;
 
     out += `<div class="order-row" style="grid-template-columns:100px 1fr 120px 100px 90px 140px 80px;" onclick="loadOrderFromAirtable('${rec.id}')">
-      <span class="order-po">${f['Name'] || '—'}</span>
+      <span class="order-po">${f['PONumber'] || '—'}</span>
       <span>${f['JobName'] || '—'}</span>
       <span>${f['Supplier'] || '—'}</span>
       <span>${f['OrderDate'] || '—'}</span>
@@ -2177,14 +2177,14 @@ async function loadOrderFromAirtable(airtableId) {
 
     currentAirtableId = airtableId;
 
-    document.getElementById('poNumber').value   = f['Name']        || '';
+    document.getElementById('poNumber').value   = f['PONumber']    || '';
     document.getElementById('orderDate').value  = f['OrderDate']   || '';
     document.getElementById('orderedBy').value  = f['OrderedBy']   || '';
     document.getElementById('jobName').value    = f['JobName']     || '';
     document.getElementById('jobAddress').value = f['JobAddress']  || '';
     document.getElementById('vendor').value     = f['Vendor']      || '';
     document.getElementById('orderNotes').value = f['Notes']       || '';
-    updatePO(f['Name'] || '');
+    updatePO(f['PONumber'] || '');
 
     // Restore supplier — match by name
     const supKey = Object.keys(SUPPLIERS_DATA).find(
