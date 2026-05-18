@@ -2017,25 +2017,25 @@ async function saveOrder(silent = false) {
   updateSaveIndicator('', 'Saving…');
 
   try {
+    // Use 'Name' as the primary field (Airtable default) = PO Number
     const fields = {
-      'PO Number':      d.po        || '',
-      'Order Date':     d.date      || '',
-      'Job Name':       d.job       || '',
-      'Job Address':    d.address   || '',
-      'Supplier':       d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
-      'Vendor':         d.vendor    || '',
-      'Status':         currentStatus,
-      'Notes':          d.notes     || '',
-      'Version':        'v1.0-CRS-MOF',
-      'Items JSON':     JSON.stringify(tableRows),
-      'Created By':     currentAirtableId ? undefined : user,   // only set on create
-      'Last Modified By': user,
-      'Last Modified At': now,
-      'Ordered By':     d.orderedBy || ''
+      'Name':              d.po || '(no PO)',
+      'Notes':             d.notes || '',
+      'Status':            currentStatus,
+      'OrderDate':         d.date || '',
+      'JobName':           d.job || '',
+      'JobAddress':        d.address || '',
+      'Supplier':          d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
+      'Vendor':            d.vendor || '',
+      'OrderedBy':         d.orderedBy || '',
+      'Version':           'v1.0-CRS-MOF',
+      'ItemsJSON':         JSON.stringify(tableRows),
+      'LastModifiedBy':    user,
+      'LastModifiedAt':    now,
     };
 
-    // Remove undefined fields
-    Object.keys(fields).forEach(k => fields[k] === undefined && delete fields[k]);
+    // Only add CreatedBy on new records
+    if (!currentAirtableId) fields['CreatedBy'] = user;
 
     let result;
     if (currentAirtableId) {
@@ -2070,7 +2070,7 @@ async function loadOrdersFromAirtable() {
   try {
     updateSyncStatus('syncing', 'Loading orders from Airtable…');
     const params = new URLSearchParams({
-      'sort[0][field]':     'Last Modified At',
+      'sort[0][field]':     'LastModifiedAt',
       'sort[0][direction]': 'desc',
       'maxRecords':         '100'
     });
@@ -2122,11 +2122,11 @@ function renderOrdersTable(records) {
     filtered = records.filter(r => {
       const f = r.fields || {};
       return (
-        (f['PO Number']||'').toLowerCase().includes(ordersFilterText) ||
-        (f['Job Name']||'').toLowerCase().includes(ordersFilterText) ||
+        (f['Name']||'').toLowerCase().includes(ordersFilterText) ||
+        (f['JobName']||'').toLowerCase().includes(ordersFilterText) ||
         (f['Supplier']||'').toLowerCase().includes(ordersFilterText) ||
         (f['Status']||'').toLowerCase().includes(ordersFilterText) ||
-        (f['Ordered By']||'').toLowerCase().includes(ordersFilterText)
+        (f['OrderedBy']||'').toLowerCase().includes(ordersFilterText)
       );
     });
   }
@@ -2145,17 +2145,17 @@ function renderOrdersTable(records) {
   filtered.forEach(rec => {
     const f    = rec.fields || {};
     const pill = pillClass[f['Status']] || 'pill-draft';
-    const modBy = f['Last Modified By'] || '—';
-    const modAt = f['Last Modified At']
-      ? new Date(f['Last Modified At']).toLocaleDateString()
+    const modBy = f['LastModifiedBy'] || '—';
+    const modAt = f['LastModifiedAt']
+      ? new Date(f['LastModifiedAt']).toLocaleDateString()
       : '—';
     const modInfo = `${modBy}<br><span style="font-size:10px;color:var(--gray-400)">${modAt}</span>`;
 
     out += `<div class="order-row" style="grid-template-columns:100px 1fr 120px 100px 90px 140px 80px;" onclick="loadOrderFromAirtable('${rec.id}')">
-      <span class="order-po">${f['PO Number'] || '—'}</span>
-      <span>${f['Job Name'] || '—'}</span>
+      <span class="order-po">${f['Name'] || '—'}</span>
+      <span>${f['JobName'] || '—'}</span>
       <span>${f['Supplier'] || '—'}</span>
-      <span>${f['Order Date'] || '—'}</span>
+      <span>${f['OrderDate'] || '—'}</span>
       <span><span class="order-status-pill ${pill}">${f['Status'] || 'Draft'}</span></span>
       <span style="font-size:12px;">${modInfo}</span>
       <span class="order-actions" onclick="event.stopPropagation()">
@@ -2177,14 +2177,14 @@ async function loadOrderFromAirtable(airtableId) {
 
     currentAirtableId = airtableId;
 
-    document.getElementById('poNumber').value   = f['PO Number']   || '';
-    document.getElementById('orderDate').value  = f['Order Date']  || '';
-    document.getElementById('orderedBy').value  = f['Ordered By']  || '';
-    document.getElementById('jobName').value    = f['Job Name']    || '';
-    document.getElementById('jobAddress').value = f['Job Address'] || '';
+    document.getElementById('poNumber').value   = f['Name']        || '';
+    document.getElementById('orderDate').value  = f['OrderDate']   || '';
+    document.getElementById('orderedBy').value  = f['OrderedBy']   || '';
+    document.getElementById('jobName').value    = f['JobName']     || '';
+    document.getElementById('jobAddress').value = f['JobAddress']  || '';
     document.getElementById('vendor').value     = f['Vendor']      || '';
     document.getElementById('orderNotes').value = f['Notes']       || '';
-    updatePO(f['PO Number'] || '');
+    updatePO(f['Name'] || '');
 
     // Restore supplier — match by name
     const supKey = Object.keys(SUPPLIERS_DATA).find(
@@ -2199,7 +2199,7 @@ async function loadOrderFromAirtable(airtableId) {
     const tbody = document.getElementById('itemsBody');
     tbody.innerHTML = '';
     try {
-      const rows = JSON.parse(f['Items JSON'] || '[]');
+      const rows = JSON.parse(f['ItemsJSON'] || '[]');
       rows.forEach(r => {
         if (r.type === 'cat') {
           const tr = document.createElement('tr');
@@ -2214,8 +2214,8 @@ async function loadOrderFromAirtable(airtableId) {
 
     setStatus(f['Status'] || 'Draft');
 
-    const modBy = f['Last Modified By'] || '—';
-    const modAt = f['Last Modified At'] ? new Date(f['Last Modified At']).toLocaleString() : '—';
+    const modBy = f['LastModifiedBy'] || '—';
+    const modAt = f['LastModifiedAt'] ? new Date(f['LastModifiedAt']).toLocaleString() : '—';
     updateSaveIndicator('saved', `Last saved by ${modBy}`);
     updateSyncStatus('synced', `Loaded · Last modified by ${modBy} on ${modAt}`);
     document.getElementById('syncRecordId').textContent = airtableId;
