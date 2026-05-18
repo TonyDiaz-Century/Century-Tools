@@ -2017,21 +2017,18 @@ async function saveOrder(silent = false) {
   updateSaveIndicator('', 'Saving…');
 
   try {
-    // JobName is the primary field in Table 1
+    // Exact fields confirmed in Airtable Table 1
     const fields = {
       'JobName':        d.job || '(no job)',
-      'PONumber':       d.po || '',
-      'OrderDate':      d.date || '',
       'JobAddress':     d.address || '',
+      'OrderDate':      d.date || '',
       'Supplier':       d.supplier ? SUPPLIERS_DATA[d.supplier]?.name : '',
-      'Vendor':         d.vendor || '',
-      'OrderedBy':      d.orderedBy || '',
       'Status':         currentStatus,
       'Notes':          d.notes || '',
-      'Version':        'v1.0-CRS-MOF',
       'ItemsJSON':      JSON.stringify(tableRows),
       'LastModifiedBy': user,
       'LastModifiedAt': now,
+      'Version':        'v1.0-CRS-MOF',
     };
     if (!currentAirtableId) fields['CreatedBy'] = user;
 
@@ -2339,4 +2336,3 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
-
