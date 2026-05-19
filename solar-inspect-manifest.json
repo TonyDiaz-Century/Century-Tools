@@ -1,0 +1,23 @@
+{
+  "name": "Century Solar Inspection",
+  "short_name": "Solar Report",
+  "description": "Century Roof & Solar - Solar Inspection Report",
+  "start_url": "century-solar-inspection-tool.html",
+  "display": "standalone",
+  "background_color": "#c85a00",
+  "theme_color": "#c85a00",
+  "icons": [
+    {
+      "src": "icon-solar-inspect-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-solar-inspect-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
