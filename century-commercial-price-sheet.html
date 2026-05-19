@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Century Roof & Solar — Commercial Price Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2d7a3a;
+    --green-dark: #1e5427;
+    --green-light: #e8f5eb;
+    --gold: #f0b429;
+    --gold-dark: #c9912a;
+    --gold-light: #fff8e6;
+    --red: #c0392b;
+    --red-light: #fdf0ef;
+    --blue: #1a5fa8;
+    --blue-light: #e8f0fb;
+    --gray-50: #f8f9fa;
+    --gray-100: #f1f3f5;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    --pw-color: #7b2fa0;
+    --pw-light: #f3e8fb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--green-dark);
+    color: white;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 3px solid var(--gold);
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: white;
+    line-height: 1;
+  }
+  .header-logo-sub {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .header-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .badge-standard { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .badge-pw { background: var(--pw-color); color: white; border: 1px solid #9b3fc0; }
+
+  /* ── PW TOGGLE BAR ── */
+  .pw-bar {
+    background: var(--green-light);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .pw-bar.active { background: var(--pw-light); border-bottom-color: #c9a0e0; }
+
+  .toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .toggle-switch {
+    width: 44px; height: 24px;
+    background: var(--gray-300);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on { background: var(--pw-color); }
+  .toggle-switch.on::after { left: 23px; }
+  .toggle-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+  .toggle-label.pw-on { color: var(--pw-color); }
+
+  .pw-notice {
+    font-size: 12px;
+    color: var(--pw-color);
+    font-weight: 500;
+    background: var(--pw-light);
+    border: 1px solid #c9a0e0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    display: none;
+  }
+  .pw-notice.visible { display: block; }
+
+  /* ── JOB INFO BAR ── */
+  .job-bar {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 12px 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .job-field label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .job-field input, .job-field select {
+    width: 100%;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--gray-900);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .job-field input:focus, .job-field select:focus { border-color: var(--green); }
+
+  /* ── SETTINGS ROW ── */
+  .settings-row {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .setting-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .setting-item label { color: var(--gray-600); font-weight: 500; white-space: nowrap; }
+  .setting-item select, .setting-item input[type=number] {
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: white;
+    outline: none;
+    width: auto;
+  }
+  .setting-item input[type=number] { width: 70px; }
+  .setting-item select:focus, .setting-item input:focus { border-color: var(--green); }
+  .margin-warn {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 600;
+    display: none;
+  }
+  .margin-warn.visible { display: inline; }
+
+  .btn-rate-breakdown {
+    background: var(--green-light);
+    border: 1px solid var(--green);
+    color: var(--green-dark);
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-rate-breakdown:hover { background: var(--green); color: white; }
+
+  .rate-field label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .rate-field input[type=number] {
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    width: 80px;
+    outline: none;
+    background: white;
+  }
+  .rate-field input[type=number]:focus { border-color: var(--green); }
+  .rate-hint {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 4px;
+  }
+
+  /* ── TABS ── */
+  .tabs-wrap {
+    background: white;
+    border-bottom: 2px solid var(--gray-200);
+    padding: 0 24px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .tab-btn {
+    display: inline-block;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--green); }
+  .tab-btn.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    font-weight: 600;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  .section-panel {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    color: var(--gray-600);
+  }
+  .section-total {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-800);
+  }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 7px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--gray-500);
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+  thead th.right { text-align: right; }
+  tbody tr { border-bottom: 1px solid var(--gray-100); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-50); }
+  tbody td { padding: 7px 10px; vertical-align: middle; }
+  tbody td input {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    width: 100%;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  tbody td input:focus {
+    border-color: var(--green);
+    background: white;
+  }
+  tbody td input.num { text-align: right; font-family: 'DM Mono', monospace; }
+  .computed {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    text-align: right;
+    color: var(--gray-700);
+  }
+  .computed.highlight { color: var(--green-dark); font-weight: 500; }
+  .rate-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gray-500);
+    text-align: right;
+  }
+  .rate-display.pw-rate { color: var(--pw-color); font-weight: 500; }
+
+  .add-row-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--green);
+    cursor: pointer;
+    padding: 8px 16px;
+    border-top: 1px dashed var(--gray-200);
+    background: white;
+    font-weight: 500;
+    transition: background 0.15s;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+  .add-row-btn:hover { background: var(--green-light); }
+
+  .del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    font-size: 16px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .del-btn:hover { color: var(--red); background: var(--red-light); }
+
+  /* ── TOTALS PANEL ── */
+  .totals-panel {
+    background: var(--green-dark);
+    color: white;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .totals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .total-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    padding: 12px 14px;
+  }
+  .total-card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 4px;
+  }
+  .total-card-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+  }
+  .total-card-value.gold { color: var(--gold); }
+  .total-contract-row {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .total-contract-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.8);
+  }
+  .total-contract-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* ── PRINT BUTTON ── */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-gold { background: var(--gold); color: var(--gray-900); }
+  .btn-gold:hover { background: var(--gold-dark); color: white; }
+  .btn-outline { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+  .btn-outline:hover { border-color: var(--green); color: var(--green); }
+  .pw-stamp {
+    display: none;
+    background: var(--pw-color);
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 9px 18px;
+    border-radius: 5px;
+  }
+  .pw-stamp.visible { display: inline-flex; align-items: center; }
+
+  /* ── RATE INFO ── */
+  .rate-info-box {
+    background: var(--blue-light);
+    border: 1px solid #b0cbee;
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--blue);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .rate-info-box strong { font-weight: 600; }
+
+  /* ── HIDDEN TABS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── PRINT ── */
+  @media print {
+    .site-header, .pw-bar, .settings-row, .tabs-wrap, .action-row, .add-row-btn, .del-btn { display: none !important; }
+    .main { padding: 0; max-width: 100%; }
+    body { background: white; }
+    .print-header { display: block !important; }
+    .section-panel { border: 1px solid #ccc; break-inside: avoid; }
+    .totals-panel { background: var(--green-dark) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  .print-header {
+    display: none;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .desc-col { min-width: 160px; }
+  .num-col { width: 80px; }
+  .unit-col { width: 90px; }
+  .rate-col { width: 110px; }
+  .cost-col { width: 100px; }
+  .quote-col { width: 110px; }
+
+  @media (max-width: 768px) {
+    .job-bar { grid-template-columns: 1fr 1fr; }
+    .settings-row { gap: 12px; }
+    .main { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-brand">
+    <div>
+      <div class="header-logo-text">Century Roof & Solar</div>
+      <div class="header-logo-sub">LIC #721502 · C10 & C39</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:12px;color:rgba(255,255,255,0.6);">Commercial Price Sheet</span>
+    <span id="job-type-badge" class="header-badge badge-standard">STANDARD WAGE</span>
+  </div>
+</header>
+
+<!-- PW TOGGLE BAR -->
+<div class="pw-bar" id="pw-bar">
+  <div class="toggle-wrap" onclick="togglePW()">
+    <div class="toggle-switch" id="pw-toggle"></div>
+    <span class="toggle-label" id="pw-label">Prevailing Wage Job</span>
+  </div>
+  <span class="pw-notice" id="pw-notice">⚠ DIR Prevailing Wage rates active — all labor rates updated to certified DIR amounts</span>
+</div>
+
+<!-- JOB INFO -->
+<div class="job-bar">
+  <div class="job-field">
+    <label>Project / Customer</label>
+    <input type="text" id="fi-project" placeholder="Customer / Project name">
+  </div>
+  <div class="job-field">
+    <label>Address</label>
+    <input type="text" id="fi-address" placeholder="Job site address">
+  </div>
+  <div class="job-field">
+    <label>Contact</label>
+    <input type="text" id="fi-contact" placeholder="Contact name">
+  </div>
+  <div class="job-field">
+    <label>Phone</label>
+    <input type="text" id="fi-phone" placeholder="(510) 000-0000">
+  </div>
+  <div class="job-field">
+    <label>Date</label>
+    <input type="date" id="fi-date">
+  </div>
+  <div class="job-field">
+    <label>Estimator</label>
+    <input type="text" id="fi-estimator" placeholder="Your name">
+  </div>
+</div>
+
+<!-- SETTINGS ROW -->
+<div class="settings-row">
+  <div class="setting-item">
+    <label>County / Tax Rate:</label>
+    <select id="county-select" onchange="updateTax()">
+      <option value="0.1075">Alameda (10.75%)</option>
+      <option value="0.0925">Santa Clara (9.25%)</option>
+      <option value="0.1000">Contra Costa (10.00%)</option>
+      <option value="0.0875">San Francisco (8.75%)</option>
+      <option value="0.0875">Sacramento (8.75%)</option>
+      <option value="0.0775">San Diego (7.75%)</option>
+    </select>
+  </div>
+  <div class="setting-item">
+    <label>Gross Margin:</label>
+    <input type="number" id="margin-input" value="20" min="1" max="60" step="1" onchange="recalcAll()"> %
+    <span class="margin-warn" id="margin-warn">⚠ Below 20% minimum</span>
+  </div>
+  <div class="setting-item">
+    <button class="btn-rate-breakdown" onclick="toggleRatePanel()">⚙ Labor Rate Breakdown</button>
+  </div>
+  <div class="setting-item" style="font-size:12px;color:var(--gray-500);">
+    Std Rate: $<span id="std-rate-display">120.00</span>/hr &nbsp;|&nbsp; PW: DIR 2024–25
+  </div>
+</div>
+
+<!-- LABOR RATE BREAKDOWN PANEL -->
+<div id="rate-breakdown-panel" style="display:none; background:#fff; border-bottom:2px solid var(--green); padding:16px 24px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+    <span style="font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:1px; color:var(--green-dark);">Standard Labor Rate Builder</span>
+    <button onclick="toggleRatePanel()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray-500);">×</button>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:16px;">
+    <div class="rate-field">
+      <label>Base Wage ($/hr)</label>
+      <div style="display:flex;align-items:center;gap:6px;">
+        $<input type="number" id="rate-base" value="40" min="10" max="200" step="1" onchange="calcRate()">
+      </div>
+      <div class="rate-hint">Journeyman base pay</div>
+    </div>
+    <div class="rate-field">
+      <label>Labor Burden (%)</label>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input type="number" id="rate-burden-pct" value="35" min="0" max="80" step="1" onchange="calcRate()"> %
+      </div>
+      <div class="rate-hint">FICA, FUTA, SUTA, workers comp, benefits = $<span id="burden-dollar">14.00</span>/hr</div>
+    </div>
+    <div class="rate-field">
+      <label>Overhead (%)</label>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input type="number" id="rate-overhead-pct" value="165" min="0" max="150" step="1" onchange="calcRate()"> %
+      </div>
+      <div class="rate-hint">Office, insurance, equipment, vehicles = $<span id="overhead-dollar">66.00</span>/hr</div>
+    </div>
+    <div class="rate-field" style="background:var(--green-light); border-radius:6px; padding:12px;">
+      <label style="color:var(--green-dark);">Calculated Billable Rate</label>
+      <div style="font-family:'DM Mono',monospace; font-size:26px; font-weight:500; color:var(--green-dark);">$<span id="calc-rate-display">120.00</span><span style="font-size:14px;">/hr</span></div>
+      <div class="rate-hint" style="color:var(--green);">Base + Burden + Overhead</div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:16px; padding-top:12px; border-top:1px solid var(--gray-200); flex-wrap:wrap;">
+    <div style="font-size:12px; color:var(--gray-600);">
+      Rate breakdown: $<span id="rb-base">40.00</span> base
+      + $<span id="rb-burden">14.00</span> burden (<span id="rb-burden-pct">35</span>%)
+      + $<span id="rb-overhead">66.00</span> overhead (<span id="rb-overhead-pct">165</span>%)
+      = <strong>$<span id="rb-total">120.00</span>/hr</strong>
+    </div>
+    <button class="btn btn-primary" style="padding:7px 16px;font-size:12px;" onclick="applyRate()">Apply Rate</button>
+    <span id="rate-applied-msg" style="font-size:12px;color:var(--green);font-weight:600;display:none;">✓ Applied to all estimates</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <span class="tab-btn active" data-tab="flat" onclick="switchTab('flat',this)">Flat / Low-Slope</span>
+  <span class="tab-btn" data-tab="shingles" onclick="switchTab('shingles',this)">Shingles</span>
+  <span class="tab-btn" data-tab="tile" onclick="switchTab('tile',this)">Tile</span>
+  <span class="tab-btn" data-tab="metal" onclick="switchTab('metal',this)">Metal / Standing Seam</span>
+  <span class="tab-btn" data-tab="gutters" onclick="switchTab('gutters',this)">Gutters</span>
+  <span class="tab-btn" data-tab="coating" onclick="switchTab('coating',this)">Coatings</span>
+  <span class="tab-btn" data-tab="repairs" onclick="switchTab('repairs',this)">Repairs / Misc</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="print-header" id="print-header"></div>
+  <div id="rate-info-box" class="rate-info-box" style="display:none;"></div>
+
+  <!-- ── TAB PANELS ── -->
+  <div id="tab-flat" class="tab-panel active"></div>
+  <div id="tab-shingles" class="tab-panel"></div>
+  <div id="tab-tile" class="tab-panel"></div>
+  <div id="tab-metal" class="tab-panel"></div>
+  <div id="tab-gutters" class="tab-panel"></div>
+  <div id="tab-coating" class="tab-panel"></div>
+  <div id="tab-repairs" class="tab-panel"></div>
+
+  <!-- TOTALS -->
+  <div class="totals-panel" id="totals-panel">
+    <div class="totals-grid">
+      <div class="total-card">
+        <div class="total-card-label">Labor Cost</div>
+        <div class="total-card-value" id="tot-labor-cost">$0</div>
+      </div>
+      <div class="total-card">
+        <div class="total-card-label">Materials Cost</div>
+        <div class="total-card-value" id="tot-mat-cost">$0</div>
+      </div>
+      <div class="total-card">
+        <div class="total-card-label">Tax</div>
+        <div class="total-card-value" id="tot-tax">$0</div>
+      </div>
+      <div class="total-card">
+        <div class="total-card-label">Miscellaneous</div>
+        <div class="total-card-value" id="tot-misc-cost">$0</div>
+      </div>
+      <div class="total-card">
+        <div class="total-card-label">Total Cost</div>
+        <div class="total-card-value" id="tot-cost">$0</div>
+      </div>
+      <div class="total-card">
+        <div class="total-card-label">Gross Margin</div>
+        <div class="total-card-value gold" id="tot-margin-pct">20%</div>
+      </div>
+    </div>
+    <div class="total-contract-row">
+      <span class="total-contract-label">Total Contract Price</span>
+      <span class="total-contract-value" id="tot-contract">$0</span>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="action-row">
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print Estimate</button>
+    <button class="btn btn-gold" onclick="copyEstimate()">📋 Copy Summary</button>
+    <button class="btn btn-outline" onclick="clearAll()">↺ Clear Sheet</button>
+    <span class="pw-stamp" id="pw-stamp">✦ PREVAILING WAGE JOB</span>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════
+
+// DIR 2024-2025 Prevailing Wage Rates (Total Package: Base + Fringe)
+// Source: CA DIR PWD — Roofer & Waterproofer classifications
+const PW_RATES = {
+  roofer_journey:     87.38,
+  roofer_foreman:     97.38,
+  roofer_apprentice:  62.50,
+  sheet_metal:        96.40,
+  laborer:            72.15
+};
+
+// All labor tasks have a classification key
+const PW_CLASSIFY = {
+  'Tear-off / Demo':           'roofer_journey',
+  'Tear-off foreman':          'roofer_foreman',
+  'Install':                   'roofer_journey',
+  'Install foreman':           'roofer_foreman',
+  'Felt / Underlayment':       'roofer_journey',
+  'Flashing / Sheet metal':    'sheet_metal',
+  'Tile install':              'roofer_journey',
+  'Foam/Coating application':  'roofer_journey',
+  'Gutter install':            'sheet_metal',
+  'Gutter tear-off':           'sheet_metal',
+  'Cleanup / Punch list':      'laborer',
+  'Pick up materials':         'laborer',
+  'General labor':             'roofer_journey',
+  'Welding / TPO seams':       'roofer_journey',
+  'Coping / Parapet':          'sheet_metal',
+  'Skylight / Hatch work':     'sheet_metal',
+  'Metal panel install':       'sheet_metal',
+  'Fabricate flashings':       'sheet_metal',
+};
+
+function getPWRate(desc) {
+  for (const [key, cls] of Object.entries(PW_CLASSIFY)) {
+    if (desc.toLowerCase().includes(key.toLowerCase().split('/')[0].trim())) {
+      return PW_RATES[cls];
+    }
+  }
+  return PW_RATES.roofer_journey; // default
+}
+
+// ── GLOBAL STATE ──
+let isPW = false;
+let currentTab = 'flat';
+let rows = {}; // { tabId: { labor:[], materials:[], misc:[] } }
+let taxRate = 0.1075;
+
+// ── TAB DEFINITIONS ──
+const TABS = {
+  flat: {
+    label: 'Flat / Low-Slope',
+    labor: [
+      { desc: 'Tear-off / Demo', hrs: '', notes: 'crew hrs' },
+      { desc: 'Install TPO / Modified Bitumen', hrs: '', notes: '' },
+      { desc: 'Welding / TPO seams', hrs: '', notes: '' },
+      { desc: 'Flashing / Sheet metal', hrs: '', notes: '' },
+      { desc: 'Install insulation board', hrs: '', notes: '' },
+      { desc: 'Fabricate flashings', hrs: '', notes: '' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+      { desc: 'Pick up materials', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'TPO 60 mil — 10 sq roll', unit: 'roll', qty: '', cost: 245 },
+      { desc: 'TPO 80 mil — 10 sq roll', unit: 'roll', qty: '', cost: 310 },
+      { desc: 'Mod Bit Base Sheet — 2 sq roll', unit: 'roll', qty: '', cost: 68 },
+      { desc: 'Mod Bit Cap Sheet — 1 sq roll', unit: 'roll', qty: '', cost: 95 },
+      { desc: 'Insulation ISO 2" R-13', unit: '4x8 sheet', qty: '', cost: 28 },
+      { desc: 'Insulation ISO 3" R-20', unit: '4x8 sheet', qty: '', cost: 38 },
+      { desc: 'Cover board 1/2"', unit: '4x4 sheet', qty: '', cost: 18 },
+      { desc: 'TPO Membrane adhesive', unit: 'gal', qty: '', cost: 52 },
+      { desc: 'TPO Seam tape 2"', unit: 'roll', qty: '', cost: 28 },
+      { desc: 'TPO walkpad 3x3', unit: 'each', qty: '', cost: 14 },
+      { desc: 'Galv flashing 24 ga 4x10', unit: 'sheet', qty: '', cost: 28 },
+      { desc: 'Termination bar', unit: '10 ft', qty: '', cost: 6 },
+      { desc: 'Coping cap aluminum', unit: 'lin ft', qty: '', cost: 8 },
+      { desc: 'Pipe jacks 2"', unit: 'each', qty: '', cost: 18 },
+      { desc: 'Pipe jacks 4"', unit: 'each', qty: '', cost: 24 },
+      { desc: 'Screws & fasteners', unit: 'box', qty: '', cost: 22 },
+      { desc: 'Urethane sealant', unit: 'tube', qty: '', cost: 8 },
+    ],
+    misc: [
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'ton', qty: '', cost: 95 },
+      { desc: 'Crane / equipment rental', unit: 'day', qty: '', cost: 650 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  shingles: {
+    label: 'Shingles (Composition)',
+    labor: [
+      { desc: 'Tear-off / Demo', hrs: '', notes: '' },
+      { desc: 'Install', hrs: '', notes: 'felt/deck prep' },
+      { desc: 'Install underlayment', hrs: '', notes: '' },
+      { desc: 'Install shingles', hrs: '', notes: '' },
+      { desc: 'Install hip & ridge', hrs: '', notes: '' },
+      { desc: 'Flashing / Sheet metal', hrs: '', notes: '' },
+      { desc: 'Fabricate flashings', hrs: '', notes: '' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'Shingles — 30yr Landmark', unit: '3 bdl/sq', qty: '', cost: 55 },
+      { desc: 'Shingles — 40yr Landmark', unit: '3 bdl/sq', qty: '', cost: 68 },
+      { desc: 'Shingles — 50yr Landmark', unit: '4 bdl/sq', qty: '', cost: 82 },
+      { desc: 'Shingles — Presidential 50', unit: '5 bdl/sq', qty: '', cost: 118 },
+      { desc: 'GAF Timberline 30yr', unit: '3 bdl/sq', qty: '', cost: 60 },
+      { desc: 'GAF Timberline 40yr', unit: '4 bdl/sq', qty: '', cost: 72 },
+      { desc: 'GAF Grand Sequoia Lifetime', unit: '5 bdl/sq', qty: '', cost: 118 },
+      { desc: 'Felt 15# 36"', unit: '4 sq roll', qty: '', cost: 22 },
+      { desc: 'Felt 30# 36"', unit: '2 sq roll', qty: '', cost: 20 },
+      { desc: 'Weather Watch ice & water', unit: '2 sq roll', qty: '', cost: 85 },
+      { desc: 'Plywood 1/2" 3-ply', unit: '4x8 sheet', qty: '', cost: 42 },
+      { desc: 'Redwood battens', unit: '1 sq bundle', qty: '', cost: 9 },
+      { desc: 'Coil nails 1-1/4"', unit: '25 sq box', qty: '', cost: 48 },
+      { desc: 'Starter 9"', unit: '30 ft bundle', qty: '', cost: 9 },
+      { desc: 'GAF Universal Hip & Ridge', unit: '33 ft bundle', qty: '', cost: 42 },
+      { desc: 'Cobra ridge vent 8"', unit: '20 ft roll', qty: '', cost: 54 },
+      { desc: 'Valley painted 18"', unit: '10 ft stick', qty: '', cost: 18 },
+      { desc: 'Valley painted 24"', unit: '10 ft stick', qty: '', cost: 26 },
+      { desc: 'Galv pipe jack 2"', unit: 'each', qty: '', cost: 8 },
+      { desc: 'Galv pipe jack 4"', unit: 'each', qty: '', cost: 12 },
+      { desc: 'Rubber collar 3"', unit: 'each', qty: '', cost: 7 },
+    ],
+    misc: [
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'ton', qty: '', cost: 95 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  tile: {
+    label: 'Tile (Concrete / Clay)',
+    labor: [
+      { desc: 'Tear-off / Demo', hrs: '', notes: '' },
+      { desc: 'Install underlayment', hrs: '', notes: '30# felt + battens' },
+      { desc: 'Tile install', hrs: '', notes: '' },
+      { desc: 'Install hip & ridge', hrs: '', notes: '' },
+      { desc: 'Mortar hip & ridge', hrs: '', notes: '' },
+      { desc: 'Flashing / Sheet metal', hrs: '', notes: '' },
+      { desc: 'Fabricate flashings', hrs: '', notes: '' },
+      { desc: 'Gutter install', hrs: '', notes: '' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'Tile — Monier concrete sq', unit: 'square', qty: '', cost: 0 },
+      { desc: 'Tile — Boral 2-piece clay sq', unit: 'square', qty: '', cost: 0 },
+      { desc: 'Felt 30# 36"', unit: '2 sq roll', qty: '', cost: 20 },
+      { desc: 'Staples', unit: 'box', qty: '', cost: 12 },
+      { desc: 'Redwood battens', unit: '1 sq bundle', qty: '', cost: 9 },
+      { desc: 'Nails 8d', unit: '50 lb box', qty: '', cost: 48 },
+      { desc: 'Pan flashing', unit: '10 ft stick', qty: '', cost: 0 },
+      { desc: 'Bird stop', unit: '10 ft stick', qty: '', cost: 0 },
+      { desc: 'Hip and ridge pieces', unit: 'each', qty: '', cost: 0 },
+      { desc: 'Mortar sack', unit: 'sack', qty: '', cost: 18 },
+      { desc: 'Pipe flashing galv 2"', unit: 'each', qty: '', cost: 12 },
+      { desc: 'Pipe flashing lead 2"', unit: 'each', qty: '', cost: 18 },
+      { desc: 'W-valley painted 18"', unit: '10 ft stick', qty: '', cost: 18 },
+      { desc: 'Gutters 5" OG aluminum', unit: 'lin ft', qty: '', cost: 1.20 },
+      { desc: 'Downspout 2x3 aluminum', unit: 'lin ft', qty: '', cost: 1.05 },
+    ],
+    misc: [
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'ton', qty: '', cost: 95 },
+      { desc: 'Crane / equipment rental', unit: 'day', qty: '', cost: 650 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  metal: {
+    label: 'Metal / Standing Seam',
+    labor: [
+      { desc: 'Install underlayment', hrs: '', notes: 'Vycor / peel & stick' },
+      { desc: 'Metal panel install', hrs: '', notes: '' },
+      { desc: 'Fabricate flashings', hrs: '', notes: 'rake, ridge, hip' },
+      { desc: 'Install starter', hrs: '', notes: '' },
+      { desc: 'Install hip & ridge', hrs: '', notes: '' },
+      { desc: 'Flashing / Sheet metal', hrs: '', notes: '' },
+      { desc: 'Coping / Parapet', hrs: '', notes: '' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'Standing seam panels 24ga Kynar', unit: 'sq ft', qty: '', cost: 1.65 },
+      { desc: 'Flat stock coil 24ga Kynar', unit: '4x10 sheet', qty: '', cost: 52 },
+      { desc: 'Vycor Select underlayment', unit: '2 sq roll', qty: '', cost: 85 },
+      { desc: 'Panel clips 1750', unit: 'each', qty: '', cost: 0.55 },
+      { desc: '#10x1" pancake screws', unit: 'box/100', qty: '', cost: 6 },
+      { desc: '#9x1" wood grip screws', unit: 'box/100', qty: '', cost: 7 },
+      { desc: 'Stainless steel pop rivets', unit: 'box/100', qty: '', cost: 12 },
+      { desc: 'Urethane sealant', unit: 'tube', qty: '', cost: 8 },
+      { desc: 'Square cap nails', unit: 'lb', qty: '', cost: 3 },
+    ],
+    misc: [
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'ton', qty: '', cost: 95 },
+      { desc: 'Crane / equipment rental', unit: 'day', qty: '', cost: 650 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  gutters: {
+    label: 'Gutters',
+    labor: [
+      { desc: 'Gutter tear-off', hrs: '', notes: '' },
+      { desc: 'Gutter install', hrs: '', notes: '5" OG aluminum' },
+      { desc: 'Install downspouts 1-story', hrs: '', notes: '' },
+      { desc: 'Install downspouts 2-story', hrs: '', notes: '' },
+      { desc: 'Pick up materials', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: '5" OG gutter .027 aluminum', unit: 'lin ft', qty: '', cost: 1.05 },
+      { desc: '6" OG gutter .032 aluminum', unit: 'lin ft', qty: '', cost: 1.35 },
+      { desc: '5" copper half-round', unit: 'lin ft', qty: '', cost: 10.50 },
+      { desc: '6" copper half-round', unit: 'lin ft', qty: '', cost: 11.00 },
+      { desc: 'Hangers with clip', unit: 'each', qty: '', cost: 0.45 },
+      { desc: 'Outside miter alum', unit: 'each', qty: '', cost: 2.50 },
+      { desc: 'Inside miter alum', unit: 'each', qty: '', cost: 2.50 },
+      { desc: 'End cap R', unit: 'each', qty: '', cost: 0.75 },
+      { desc: 'End cap L', unit: 'each', qty: '', cost: 0.75 },
+      { desc: 'Outlets 2" round', unit: 'each', qty: '', cost: 1.00 },
+      { desc: 'Sealant Vulkem 116 white', unit: 'tube', qty: '', cost: 5 },
+      { desc: 'Downspout 2x3 aluminum', unit: 'lin ft', qty: '', cost: 1.05 },
+      { desc: 'Elbow A 2x3', unit: 'each', qty: '', cost: 1.25 },
+      { desc: 'Elbow B 2x3', unit: 'each', qty: '', cost: 1.25 },
+      { desc: 'Strap 2x3', unit: 'each', qty: '', cost: 0.50 },
+      { desc: '3" round downspout', unit: 'lin ft', qty: '', cost: 1.50 },
+      { desc: 'Spray paint color match', unit: 'can', qty: '', cost: 5 },
+    ],
+    misc: [
+      { desc: 'Dumpster / haul-off', unit: 'load', qty: '', cost: 150 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  coating: {
+    label: 'Coatings (Gaco / Poly-Tuff)',
+    labor: [
+      { desc: 'Install underlayment', hrs: '', notes: 'prime deck' },
+      { desc: 'Install perimeter edge flashing', hrs: '', notes: '' },
+      { desc: 'Fabricate flashings', hrs: '', notes: 'split jacks, door pans' },
+      { desc: 'Foam/Coating application', hrs: '', notes: 'tape joints, base coat' },
+      { desc: 'Foam/Coating application', hrs: '', notes: 'top coat' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+      { desc: 'Pick up materials', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'Gaco Primer E-5320', unit: '0.5 gal/sq', qty: '', cost: 0 },
+      { desc: 'Gaco Base coat UB-64', unit: '1 gal/sq', qty: '', cost: 0 },
+      { desc: 'Gaco Top coat U-66', unit: '1 gal/sq', qty: '', cost: 0 },
+      { desc: 'Gaco Tape 66B', unit: '300 ft roll', qty: '', cost: 0 },
+      { desc: 'Poly-Tuff Primer #2', unit: 'kit', qty: '', cost: 95 },
+      { desc: 'Poly-Tuff Classic Base Coat', unit: '1 gal/sq', qty: '', cost: 40 },
+      { desc: 'Poly-Tuff Top Coat', unit: '1 gal/sq', qty: '', cost: 45 },
+      { desc: 'Polyester 4" reinforcing mesh', unit: 'roll', qty: '', cost: 22 },
+      { desc: 'Sand 50# bag', unit: 'bag', qty: '', cost: 16 },
+      { desc: 'Galvanized flashing 24 ga 4x10', unit: 'sheet', qty: '', cost: 28 },
+      { desc: 'Urethane sealant', unit: 'tube', qty: '', cost: 8 },
+      { desc: 'Roofing nails', unit: 'lb', qty: '', cost: 2 },
+    ],
+    misc: [
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'ton', qty: '', cost: 95 },
+      { desc: 'Crane / equipment rental', unit: 'day', qty: '', cost: 650 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+      { desc: 'Travel time — passenger', unit: 'hr', qty: '', cost: '' },
+    ]
+  },
+  repairs: {
+    label: 'Repairs / Miscellaneous',
+    labor: [
+      { desc: 'General labor', hrs: '', notes: '' },
+      { desc: 'Flashing / Sheet metal', hrs: '', notes: '' },
+      { desc: 'Cleanup / Punch list', hrs: '', notes: '' },
+    ],
+    materials: [
+      { desc: 'Misc. materials', unit: 'each', qty: '', cost: '' },
+      { desc: 'Cement / adhesive', unit: 'tube', qty: '', cost: 8 },
+      { desc: 'Patch material', unit: 'sq ft', qty: '', cost: '' },
+    ],
+    misc: [
+      { desc: 'Service call', unit: 'each', qty: '', cost: '' },
+      { desc: 'Permit', unit: 'each', qty: '', cost: '' },
+      { desc: 'Dumpster / haul-off', unit: 'load', qty: '', cost: 150 },
+      { desc: 'Travel time — driver', unit: 'hr', qty: '', cost: '' },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function init() {
+  // Set today's date
+  document.getElementById('fi-date').value = new Date().toISOString().split('T')[0];
+
+  // Deep copy template data into rows state
+  for (const tab in TABS) {
+    rows[tab] = {
+      labor: TABS[tab].labor.map(r => ({...r})),
+      materials: TABS[tab].materials.map(r => ({...r})),
+      misc: TABS[tab].misc.map(r => ({...r}))
+    };
+  }
+
+  renderTab('flat');
+}
+
+// ═══════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  renderTab(tab);
+}
+
+// ═══════════════════════════════════════════
+//  RENDER TAB
+// ═══════════════════════════════════════════
+function renderTab(tab) {
+  const container = document.getElementById('tab-' + tab);
+  container.innerHTML = '';
+
+  container.appendChild(buildLaborSection(tab));
+  container.appendChild(buildMaterialsSection(tab));
+  container.appendChild(buildMiscSection(tab));
+
+  recalcAll();
+}
+
+function buildLaborSection(tab) {
+  const panel = document.createElement('div');
+  panel.className = 'section-panel';
+
+  const stdRate = currentStdRate;
+
+  panel.innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Labor</span>
+      <span class="section-total" id="labor-total-${tab}">$0.00</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="desc-col">Description</th>
+          <th class="num-col right">Hours</th>
+          <th class="rate-col right">${isPW ? 'DIR PW Rate' : 'Rate/hr'}</th>
+          <th class="cost-col right">Labor Cost</th>
+          <th class="quote-col right">Quotation</th>
+          <th style="width:36px;"></th>
+        </tr>
+      </thead>
+      <tbody id="labor-body-${tab}"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addLaborRow('${tab}')">+ Add labor row</button>
+  `;
+
+  const tbody = panel.querySelector(`#labor-body-${tab}`);
+  rows[tab].labor.forEach((r, i) => {
+    tbody.appendChild(makeLaborRow(tab, i, r));
+  });
+
+  return panel;
+}
+
+function makeLaborRow(tab, i, r) {
+  const tr = document.createElement('tr');
+  const stdRate = currentStdRate;
+  const pwRate = getPWRate(r.desc);
+  const activeRate = isPW ? pwRate : stdRate;
+  const hrs = parseFloat(r.hrs) || 0;
+  const laborCost = hrs * activeRate;
+  const margin = (parseFloat(document.getElementById('margin-input').value) || 20) / 100;
+  const quotation = laborCost > 0 ? laborCost / (1 - margin) : 0;
+
+  const rateClass = isPW ? 'rate-display pw-rate' : 'rate-display';
+  const rateLabel = isPW ? `$${pwRate.toFixed(2)} DIR` : `$${stdRate.toFixed(2)}`;
+
+  tr.dataset.idx = i;
+  tr.innerHTML = `
+    <td class="desc-col">
+      <input type="text" value="${escH(r.desc)}" placeholder="Description"
+        onchange="updateLabor('${tab}',${i},'desc',this.value)">
+    </td>
+    <td class="num-col">
+      <input type="number" class="num" value="${r.hrs}" placeholder="0" min="0" step="0.5"
+        onchange="updateLabor('${tab}',${i},'hrs',this.value)">
+    </td>
+    <td class="rate-col"><span class="${rateClass}">${rateLabel}</span></td>
+    <td class="computed">${fmt(laborCost)}</td>
+    <td class="computed highlight">${fmt(quotation)}</td>
+    <td><button class="del-btn" onclick="delLaborRow('${tab}',${i})" title="Delete row">×</button></td>
+  `;
+  return tr;
+}
+
+function buildMaterialsSection(tab) {
+  const panel = document.createElement('div');
+  panel.className = 'section-panel';
+  panel.innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Materials</span>
+      <span class="section-total" id="mat-total-${tab}">$0.00</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="desc-col">Description</th>
+          <th class="unit-col">Unit</th>
+          <th class="num-col right">Qty</th>
+          <th class="cost-col right">Unit Cost</th>
+          <th class="cost-col right">Subtotal</th>
+          <th class="cost-col right">Tax (${(taxRate*100).toFixed(2)}%)</th>
+          <th class="cost-col right">Total Cost</th>
+          <th class="quote-col right">Quotation</th>
+          <th style="width:36px;"></th>
+        </tr>
+      </thead>
+      <tbody id="mat-body-${tab}"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addMatRow('${tab}')">+ Add material row</button>
+  `;
+
+  const tbody = panel.querySelector(`#mat-body-${tab}`);
+  rows[tab].materials.forEach((r, i) => {
+    tbody.appendChild(makeMatRow(tab, i, r));
+  });
+  return panel;
+}
+
+function makeMatRow(tab, i, r) {
+  const tr = document.createElement('tr');
+  const qty = parseFloat(r.qty) || 0;
+  const cost = parseFloat(r.cost) || 0;
+  const sub = qty * cost;
+  const tax = sub * taxRate;
+  const total = sub + tax;
+  const margin = (parseFloat(document.getElementById('margin-input').value) || 20) / 100;
+  const quotation = total > 0 ? total / (1 - margin) : 0;
+
+  tr.innerHTML = `
+    <td class="desc-col">
+      <input type="text" value="${escH(r.desc)}" placeholder="Description"
+        onchange="updateMat('${tab}',${i},'desc',this.value)">
+    </td>
+    <td class="unit-col">
+      <input type="text" value="${escH(r.unit||'')}" placeholder="unit"
+        onchange="updateMat('${tab}',${i},'unit',this.value)">
+    </td>
+    <td class="num-col">
+      <input type="number" class="num" value="${r.qty}" placeholder="0" min="0" step="1"
+        onchange="updateMat('${tab}',${i},'qty',this.value)">
+    </td>
+    <td class="num-col">
+      <input type="number" class="num" value="${r.cost}" placeholder="0.00" min="0" step="0.01"
+        onchange="updateMat('${tab}',${i},'cost',this.value)">
+    </td>
+    <td class="computed">${fmt(sub)}</td>
+    <td class="computed">${fmt(tax)}</td>
+    <td class="computed">${fmt(total)}</td>
+    <td class="computed highlight">${fmt(quotation)}</td>
+    <td><button class="del-btn" onclick="delMatRow('${tab}',${i})" title="Delete row">×</button></td>
+  `;
+  return tr;
+}
+
+function buildMiscSection(tab) {
+  const panel = document.createElement('div');
+  panel.className = 'section-panel';
+  panel.innerHTML = `
+    <div class="section-header">
+      <span class="section-title">Miscellaneous</span>
+      <span class="section-total" id="misc-total-${tab}">$0.00</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="desc-col">Description</th>
+          <th class="unit-col">Unit</th>
+          <th class="num-col right">Qty</th>
+          <th class="cost-col right">Unit Cost</th>
+          <th class="cost-col right">Total Cost</th>
+          <th class="quote-col right">Quotation</th>
+          <th style="width:36px;"></th>
+        </tr>
+      </thead>
+      <tbody id="misc-body-${tab}"></tbody>
+    </table>
+    <button class="add-row-btn" onclick="addMiscRow('${tab}')">+ Add misc row</button>
+  `;
+
+  const tbody = panel.querySelector(`#misc-body-${tab}`);
+  rows[tab].misc.forEach((r, i) => {
+    tbody.appendChild(makeMiscRow(tab, i, r));
+  });
+  return panel;
+}
+
+function makeMiscRow(tab, i, r) {
+  const tr = document.createElement('tr');
+  const qty = parseFloat(r.qty) || 0;
+  const cost = parseFloat(r.cost) || 0;
+  const total = qty * cost;
+  const margin = (parseFloat(document.getElementById('margin-input').value) || 20) / 100;
+  const quotation = total > 0 ? total / (1 - margin) : 0;
+
+  tr.innerHTML = `
+    <td class="desc-col">
+      <input type="text" value="${escH(r.desc)}" placeholder="Description"
+        onchange="updateMisc('${tab}',${i},'desc',this.value)">
+    </td>
+    <td class="unit-col">
+      <input type="text" value="${escH(r.unit||'')}" placeholder="unit"
+        onchange="updateMisc('${tab}',${i},'unit',this.value)">
+    </td>
+    <td class="num-col">
+      <input type="number" class="num" value="${r.qty}" placeholder="0" min="0" step="1"
+        onchange="updateMisc('${tab}',${i},'qty',this.value)">
+    </td>
+    <td class="num-col">
+      <input type="number" class="num" value="${r.cost}" placeholder="0.00" min="0" step="0.01"
+        onchange="updateMisc('${tab}',${i},'cost',this.value)">
+    </td>
+    <td class="computed">${fmt(total)}</td>
+    <td class="computed highlight">${fmt(quotation)}</td>
+    <td><button class="del-btn" onclick="delMiscRow('${tab}',${i})" title="Delete row">×</button></td>
+  `;
+  return tr;
+}
+
+// ═══════════════════════════════════════════
+//  UPDATE FUNCTIONS
+// ═══════════════════════════════════════════
+function updateLabor(tab, i, field, val) {
+  rows[tab].labor[i][field] = val;
+  reRenderLaborRow(tab, i);
+  recalcTotals();
+}
+function updateMat(tab, i, field, val) {
+  rows[tab].materials[i][field] = val;
+  reRenderMatRow(tab, i);
+  recalcTotals();
+}
+function updateMisc(tab, i, field, val) {
+  rows[tab].misc[i][field] = val;
+  reRenderMiscRow(tab, i);
+  recalcTotals();
+}
+
+function reRenderLaborRow(tab, i) {
+  const tbody = document.getElementById(`labor-body-${tab}`);
+  if (!tbody) return;
+  const existingRow = tbody.querySelector(`tr[data-idx="${i}"]`);
+  const newRow = makeLaborRow(tab, i, rows[tab].labor[i]);
+  if (existingRow) tbody.replaceChild(newRow, existingRow);
+}
+function reRenderMatRow(tab, i) {
+  const tbody = document.getElementById(`mat-body-${tab}`);
+  if (!tbody) return;
+  const rows_els = tbody.querySelectorAll('tr');
+  const newRow = makeMatRow(tab, i, rows[tab].materials[i]);
+  if (rows_els[i]) tbody.replaceChild(newRow, rows_els[i]);
+}
+function reRenderMiscRow(tab, i) {
+  const tbody = document.getElementById(`misc-body-${tab}`);
+  if (!tbody) return;
+  const rows_els = tbody.querySelectorAll('tr');
+  const newRow = makeMiscRow(tab, i, rows[tab].misc[i]);
+  if (rows_els[i]) tbody.replaceChild(newRow, rows_els[i]);
+}
+
+// ═══════════════════════════════════════════
+//  ADD / DELETE ROWS
+// ═══════════════════════════════════════════
+function addLaborRow(tab) {
+  rows[tab].labor.push({ desc: '', hrs: '', notes: '' });
+  const tbody = document.getElementById(`labor-body-${tab}`);
+  const i = rows[tab].labor.length - 1;
+  tbody.appendChild(makeLaborRow(tab, i, rows[tab].labor[i]));
+  recalcTotals();
+}
+function delLaborRow(tab, i) {
+  rows[tab].labor.splice(i, 1);
+  renderTab(tab);
+}
+function addMatRow(tab) {
+  rows[tab].materials.push({ desc: '', unit: 'each', qty: '', cost: '' });
+  const tbody = document.getElementById(`mat-body-${tab}`);
+  const i = rows[tab].materials.length - 1;
+  tbody.appendChild(makeMatRow(tab, i, rows[tab].materials[i]));
+  recalcTotals();
+}
+function delMatRow(tab, i) {
+  rows[tab].materials.splice(i, 1);
+  renderTab(tab);
+}
+function addMiscRow(tab) {
+  rows[tab].misc.push({ desc: '', unit: 'each', qty: '', cost: '' });
+  const tbody = document.getElementById(`misc-body-${tab}`);
+  const i = rows[tab].misc.length - 1;
+  tbody.appendChild(makeMiscRow(tab, i, rows[tab].misc[i]));
+  recalcTotals();
+}
+function delMiscRow(tab, i) {
+  rows[tab].misc.splice(i, 1);
+  renderTab(tab);
+}
+
+// ═══════════════════════════════════════════
+//  RECALCULATE
+// ═══════════════════════════════════════════
+function recalcAll() {
+  recalcTotals();
+}
+
+function recalcTotals() {
+  const stdRate = currentStdRate;
+  const margin = (parseFloat(document.getElementById('margin-input').value) || 20) / 100;
+  const marginEl = document.getElementById('margin-input');
+  const marginWarn = document.getElementById('margin-warn');
+  const marginPct = parseFloat(marginEl.value) || 20;
+  marginWarn.classList.toggle('visible', marginPct < 20);
+
+  let totalLaborCost = 0;
+  let totalMatCost = 0;
+  let totalTax = 0;
+  let totalMiscCost = 0;
+
+  for (const tab in rows) {
+    // Labor
+    rows[tab].labor.forEach(r => {
+      const hrs = parseFloat(r.hrs) || 0;
+      const rate = isPW ? getPWRate(r.desc) : stdRate;
+      totalLaborCost += hrs * rate;
+    });
+
+    // Materials
+    rows[tab].materials.forEach(r => {
+      const qty = parseFloat(r.qty) || 0;
+      const cost = parseFloat(r.cost) || 0;
+      const sub = qty * cost;
+      const tax = sub * taxRate;
+      totalMatCost += sub;
+      totalTax += tax;
+    });
+
+    // Misc
+    rows[tab].misc.forEach(r => {
+      const qty = parseFloat(r.qty) || 0;
+      const cost = parseFloat(r.cost) || 0;
+      totalMiscCost += qty * cost;
+    });
+  }
+
+  const totalCost = totalLaborCost + totalMatCost + totalTax + totalMiscCost;
+  const contractPrice = totalCost > 0 ? totalCost / (1 - margin) : 0;
+
+  // Update section totals for current tab
+  const tab = currentTab;
+  let tabLaborCost = 0;
+  rows[tab].labor.forEach(r => {
+    const hrs = parseFloat(r.hrs) || 0;
+    const rate = isPW ? getPWRate(r.desc) : stdRate;
+    tabLaborCost += hrs * rate;
+  });
+  let tabMatCost = 0;
+  let tabMatTax = 0;
+  rows[tab].materials.forEach(r => {
+    const qty = parseFloat(r.qty) || 0;
+    const cost = parseFloat(r.cost) || 0;
+    const sub = qty * cost;
+    tabMatCost += sub;
+    tabMatTax += sub * taxRate;
+  });
+  let tabMiscCost = 0;
+  rows[tab].misc.forEach(r => {
+    tabMiscCost += (parseFloat(r.qty) || 0) * (parseFloat(r.cost) || 0);
+  });
+
+  const ltEl = document.getElementById(`labor-total-${tab}`);
+  const mtEl = document.getElementById(`mat-total-${tab}`);
+  const miscTEl = document.getElementById(`misc-total-${tab}`);
+  if (ltEl) ltEl.textContent = fmt(tabLaborCost / (1 - margin));
+  if (mtEl) mtEl.textContent = fmt((tabMatCost + tabMatTax) / (1 - margin));
+  if (miscTEl) miscTEl.textContent = fmt(tabMiscCost / (1 - margin));
+
+  // Grand totals
+  document.getElementById('tot-labor-cost').textContent = fmt(totalLaborCost);
+  document.getElementById('tot-mat-cost').textContent = fmt(totalMatCost);
+  document.getElementById('tot-tax').textContent = fmt(totalTax);
+  document.getElementById('tot-misc-cost').textContent = fmt(totalMiscCost);
+  document.getElementById('tot-cost').textContent = fmt(totalCost);
+  document.getElementById('tot-margin-pct').textContent = marginPct + '%';
+  document.getElementById('tot-contract').textContent = fmt(contractPrice);
+}
+
+// ═══════════════════════════════════════════
+//  PREVAILING WAGE TOGGLE
+// ═══════════════════════════════════════════
+function togglePW() {
+  isPW = !isPW;
+  const toggle = document.getElementById('pw-toggle');
+  const label = document.getElementById('pw-label');
+  const notice = document.getElementById('pw-notice');
+  const bar = document.getElementById('pw-bar');
+  const badge = document.getElementById('job-type-badge');
+  const stamp = document.getElementById('pw-stamp');
+  const rateBox = document.getElementById('rate-info-box');
+
+  toggle.classList.toggle('on', isPW);
+  label.classList.toggle('pw-on', isPW);
+  notice.classList.toggle('visible', isPW);
+  bar.classList.toggle('active', isPW);
+  stamp.classList.toggle('visible', isPW);
+
+  if (isPW) {
+    badge.textContent = '⚑ PREVAILING WAGE JOB';
+    badge.className = 'header-badge badge-pw';
+    rateBox.style.display = 'block';
+    rateBox.innerHTML = `<strong>DIR Prevailing Wage Rates Active (2024–25 · Northern CA):</strong><br>
+      Roofer Journey: <strong>$${PW_RATES.roofer_journey}/hr</strong> &nbsp;|&nbsp;
+      Roofer Foreman: <strong>$${PW_RATES.roofer_foreman}/hr</strong> &nbsp;|&nbsp;
+      Apprentice: <strong>$${PW_RATES.roofer_apprentice}/hr</strong> &nbsp;|&nbsp;
+      Sheet Metal: <strong>$${PW_RATES.sheet_metal}/hr</strong> &nbsp;|&nbsp;
+      Laborer: <strong>$${PW_RATES.laborer}/hr</strong><br>
+      <span style="font-size:11px;opacity:0.8;">Source: CA DIR PWD — Roofer & Waterproofer (Northern CA). Verify current rates at dir.ca.gov/OPRL before bid submission.</span>`;
+  } else {
+    badge.textContent = 'STANDARD WAGE';
+    badge.className = 'header-badge badge-standard';
+    rateBox.style.display = 'none';
+  }
+
+  renderTab(currentTab);
+}
+
+// ═══════════════════════════════════════════
+//  TAX UPDATE
+// ═══════════════════════════════════════════
+function updateTax() {
+  taxRate = parseFloat(document.getElementById('county-select').value);
+  renderTab(currentTab);
+}
+
+// ═══════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════
+function fmt(n) {
+  if (!n || isNaN(n)) return '$0.00';
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function escH(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function clearAll() {
+  if (!confirm('Clear all quantities and hours? (Template descriptions will remain)')) return;
+  for (const tab in rows) {
+    rows[tab].labor.forEach(r => r.hrs = '');
+    rows[tab].materials.forEach(r => { r.qty = ''; });
+    rows[tab].misc.forEach(r => { r.qty = ''; });
+  }
+  renderTab(currentTab);
+}
+
+function copyEstimate() {
+  const project = document.getElementById('fi-project').value || '(No project)';
+  const date = document.getElementById('fi-date').value;
+  const margin = document.getElementById('margin-input').value;
+  const county = document.getElementById('county-select').options[document.getElementById('county-select').selectedIndex].text;
+  const contract = document.getElementById('tot-contract').textContent;
+  const laborCost = document.getElementById('tot-labor-cost').textContent;
+  const matCost = document.getElementById('tot-mat-cost').textContent;
+  const tax = document.getElementById('tot-tax').textContent;
+  const misc = document.getElementById('tot-misc-cost').textContent;
+  const pwNote = isPW ? '\n⚑ PREVAILING WAGE JOB — DIR Certified Rates Applied' : '';
+
+  const text = `CENTURY ROOF & SOLAR — COMMERCIAL ESTIMATE${pwNote}
+Project: ${project}
+Date: ${date} | County: ${county} | Margin: ${margin}%
+─────────────────────────────────
+Labor Cost:      ${laborCost}
+Materials Cost:  ${matCost}
+Tax:             ${tax}
+Miscellaneous:   ${misc}
+─────────────────────────────────
+TOTAL CONTRACT:  ${contract}
+`;
+  navigator.clipboard.writeText(text).then(() => alert('Summary copied to clipboard!'));
+}
+
+// ── LABOR RATE BREAKDOWN ──
+let currentStdRate = 120;
+
+function toggleRatePanel() {
+  const panel = document.getElementById('rate-breakdown-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') calcRate();
+}
+
+function calcRate() {
+  const base = parseFloat(document.getElementById('rate-base').value) || 40;
+  const burdenPct = parseFloat(document.getElementById('rate-burden-pct').value) || 35;
+  const overheadPct = parseFloat(document.getElementById('rate-overhead-pct').value) || 165;
+
+  const burden = base * (burdenPct / 100);
+  const overhead = base * (overheadPct / 100);
+  const total = base + burden + overhead;
+
+  document.getElementById('burden-dollar').textContent = burden.toFixed(2);
+  document.getElementById('overhead-dollar').textContent = overhead.toFixed(2);
+  document.getElementById('calc-rate-display').textContent = total.toFixed(2);
+  document.getElementById('rb-base').textContent = base.toFixed(2);
+  document.getElementById('rb-burden').textContent = burden.toFixed(2);
+  document.getElementById('rb-burden-pct').textContent = burdenPct;
+  document.getElementById('rb-overhead').textContent = overhead.toFixed(2);
+  document.getElementById('rb-overhead-pct').textContent = overheadPct;
+  document.getElementById('rb-total').textContent = total.toFixed(2);
+}
+
+function applyRate() {
+  const base = parseFloat(document.getElementById('rate-base').value) || 40;
+  const burdenPct = parseFloat(document.getElementById('rate-burden-pct').value) || 35;
+  const overheadPct = parseFloat(document.getElementById('rate-overhead-pct').value) || 65;
+  const burden = base * (burdenPct / 100);
+  const overhead = base * (overheadPct / 100);
+  currentStdRate = base + burden + overhead;
+
+  document.getElementById('std-rate-display').textContent = currentStdRate.toFixed(2);
+  const msg = document.getElementById('rate-applied-msg');
+  msg.style.display = 'inline';
+  setTimeout(() => { msg.style.display = 'none'; }, 2500);
+
+  renderTab(currentTab);
+}
+
+// ── LABOR RATE BREAKDOWN ──
+init();
+</script>
+</body>
+</html>
