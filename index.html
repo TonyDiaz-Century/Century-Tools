@@ -1,1 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="manifest" href="field-tools-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Century Tools">
+<link rel="apple-touch-icon" href="icon-field-tools-512.png">
+<meta name="theme-color" content="#1a3a6b">
+<meta name="msapplication-TileColor" content="#1e5227">
+<meta name="msapplication-TileImage" content="icon-field-tools-512.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Century Roof & Solar — Field Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2d7a3a;
+    --green-dark: #1e5227;
+    --green-light: #3a9e4a;
+    --gold: #f0b429;
+    --bg: #f4f6f4;
+    --white: #ffffff;
+    --gray: #5a6e5c;
+    --border: #d0ddd0;
+    --shadow: rgba(45, 122, 58, 0.12);
+    --red: #c8302d;
+    --blue: #1f5f99;
+    --orange: #c85a00;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: #222; min-height: 100vh; }
+  .top-stripe { background: var(--green-dark); height: 6px; width: 100%; }
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    box-shadow: 0 2px 10px var(--shadow);
+  }
+  .logo-area { display: flex; align-items: center; gap: 16px; }
+  .logo-area img { height: 64px; width: auto; }
+  .header-title { border-left: 2px solid var(--border); padding-left: 16px; }
+  .header-title h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--green-dark); }
+  .header-title p { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--gray); text-transform: uppercase; margin-top: 2px; }
+  .header-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .header-badge { background: var(--green); color: var(--white); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 12px; border-radius: 3px; }
+  .header-badge.gold { background: var(--gold); color: var(--green-dark); }
+  .hero {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 60%, var(--green-light) 100%);
+    padding: 56px 40px 64px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none;
+  }
+  .hero-accent { display: inline-block; background: var(--gold); color: var(--green-dark); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; padding: 5px 14px; border-radius: 2px; margin-bottom: 20px; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(38px, 6vw, 64px); color: var(--white); letter-spacing: 2px; line-height: 1; margin-bottom: 14px; }
+  .hero h1 span { color: var(--gold); }
+  .hero p { font-size: 15px; color: rgba(255,255,255,0.82); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .tools-section { max-width: 1060px; margin: 0 auto; padding: 56px 24px 80px; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 3px; color: var(--green); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .section-desc { font-size: 13px; color: var(--gray); margin-bottom: 28px; }
+  .tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 48px; }
+  .tool-card.featured { grid-column: 1 / -1; flex-direction: row !important; gap: 32px; align-items: flex-start; }
+  @media (max-width: 640px) {
+    .tools-grid { grid-template-columns: 1fr; }
+    .tool-card.featured { grid-column: auto; flex-direction: column !important; }
+    header { padding: 16px 20px; }
+    .hero { padding: 40px 20px 50px; }
+    .tools-section { padding: 36px 16px 60px; }
+  }
+  .tool-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+    padding: 28px 26px; display: flex; flex-direction: column;
+    text-decoration: none; color: inherit;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    box-shadow: 0 2px 8px var(--shadow); position: relative; overflow: hidden;
+  }
+  .tool-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--green); transform: scaleX(0); transform-origin: left; transition: transform 0.2s; }
+  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px var(--shadow); border-color: var(--green); }
+  .tool-card:hover::before { transform: scaleX(1); }
+  .tool-card.accent-red::before { background: var(--red); }
+  .tool-card.accent-red:hover { border-color: var(--red); }
+  .tool-card.accent-blue::before { background: var(--blue); }
+  .tool-card.accent-blue:hover { border-color: var(--blue); }
+  .tool-card.accent-gold::before { background: var(--gold); }
+  .tool-card.accent-gold:hover { border-color: var(--gold); }
+  .tool-card.accent-orange::before { background: var(--orange); }
+  .tool-card.accent-orange:hover { border-color: var(--orange); }
+  .tool-icon { width: 48px; height: 48px; background: rgba(45,122,58,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; flex-shrink: 0; }
+  .tool-icon.red { background: rgba(200,48,45,0.1); }
+  .tool-icon.blue { background: rgba(31,95,153,0.1); }
+  .tool-icon.gold { background: rgba(240,180,41,0.15); }
+  .tool-icon.orange { background: rgba(200,90,0,0.1); }
+  .tool-icon svg { width: 26px; height: 26px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tool-icon.red svg { stroke: var(--red); }
+  .tool-icon.blue svg { stroke: var(--blue); }
+  .tool-icon.gold svg { stroke: #c8900a; }
+  .tool-icon.orange svg { stroke: var(--orange); }
+  .tool-body { flex: 1; display: flex; flex-direction: column; }
+  .tool-category { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 7px; }
+  .tool-category.red { color: var(--red); }
+  .tool-category.blue { color: var(--blue); }
+  .tool-category.gold { color: #c8900a; }
+  .tool-category.orange { color: var(--orange); }
+  .tool-name { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1.5px; color: var(--green-dark); margin-bottom: 9px; line-height: 1.1; }
+  .tool-desc { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 20px; flex: 1; }
+  .tool-refs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
+  .ref-tag { background: rgba(45,122,58,0.08); border: 1px solid rgba(45,122,58,0.2); color: var(--green-dark); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 3px 7px; border-radius: 2px; text-transform: uppercase; }
+  .ref-tag.blue { background: rgba(31,95,153,0.07); border-color: rgba(31,95,153,0.2); color: var(--blue); }
+  .ref-tag.gold { background: rgba(240,180,41,0.1); border-color: rgba(200,144,10,0.25); color: #8a6200; }
+  .ref-tag.orange { background: rgba(200,90,0,0.07); border-color: rgba(200,90,0,0.2); color: var(--orange); }
+  .tool-cta { display: flex; align-items: center; justify-content: space-between; background: var(--green); color: var(--white); padding: 11px 16px; border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: auto; }
+  .tool-cta.blue { background: var(--blue); }
+  .tool-cta.gold { background: var(--gold); color: var(--green-dark); }
+  .tool-cta.orange { background: var(--orange); }
+  .tool-cta svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .new-badge { display: inline-block; background: var(--gold); color: var(--green-dark); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 2px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+  footer { background: var(--green-dark); color: rgba(255,255,255,0.6); text-align: center; padding: 22px 20px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+  footer strong { color: var(--gold); }
+</style>
+</head>
+<body>
 
+<div class="top-stripe"></div>
+
+<header>
+  <div class="logo-area">
+    <img src="Century_Exact_Logo_WhiteBG.png" alt="Century Roof and Solar">
+    <div class="header-title">
+      <h2>Century Field Tools</h2>
+      <p>Roof &amp; Solar — Internal Operations Suite</p>
+    </div>
+  </div>
+  <div class="header-badges">
+    <div class="header-badge">NABCEP</div>
+    <div class="header-badge">EVITP</div>
+    <div class="header-badge">RISE</div>
+    <div class="header-badge gold">License 721502</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-accent">Internal Operations Suite</div>
+  <h1>CENTURY <span>FIELD</span> TOOLS</h1>
+  <p>Purpose-built tools for inspections, estimates, field reporting, and customer delivery — designed for the iPad, desktop, and anywhere in between.</p>
+</div>
+
+<div class="tools-section">
+
+  <!-- INSPECTION TOOLS -->
+  <div class="section-label">Inspection &amp; Reporting</div>
+  <div class="section-desc">Field inspection tools with photo annotation, PDF generation, and direct email delivery to customers.</div>
+  <div class="tools-grid">
+
+    <!-- Site Visit — FEATURED -->
+    <a href="century-site-visit-tool.html" class="tool-card featured accent-gold">
+      <div class="tool-icon gold">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category gold">Initial Site Visit</div>
+        <div class="tool-name">Site Visit Report <span class="new-badge">NEW</span></div>
+        <div class="tool-desc">Fast field inspection tool designed for the iPad. Capture photos, voice-caption them, annotate with arrows and circles, and email a polished report to the customer on the spot — complete with your personal welcome video and a searchable 1,100+ job reference portfolio filtered by city and roof type.</div>
+        <div class="tool-refs">
+          <span class="ref-tag gold">Photo Annotator</span>
+          <span class="ref-tag gold">Email Delivery</span>
+          <span class="ref-tag gold">1,100+ References</span>
+          <span class="ref-tag gold">iPad App Tile</span>
+          <span class="ref-tag gold">Auto-Save Draft</span>
+        </div>
+        <div class="tool-cta gold">
+          Open Site Visit Tool
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Roof Inspection -->
+    <a href="century-inspection-tool-fixed.html" class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category">Roof Inspection</div>
+        <div class="tool-name">Roof Inspection Report</div>
+        <div class="tool-desc">Detailed roof inspection reports for GAF Warranty Claims, General Inspections, and Real Estate Transactions. Full photo documentation, annotations, disclaimers, and PDF delivery to client or GAF.</div>
+        <div class="tool-refs">
+          <span class="ref-tag">GAF Warranty</span>
+          <span class="ref-tag">Real Estate</span>
+          <span class="ref-tag">General</span>
+          <span class="ref-tag">Photo Annotator</span>
+        </div>
+        <div class="tool-cta">
+          Open Roof Inspection
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Solar Inspection -->
+    <a href="century-solar-inspection-tool.html" class="tool-card accent-orange">
+      <div class="tool-icon orange">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category orange">Solar Inspection</div>
+        <div class="tool-name">Solar Inspection Report</div>
+        <div class="tool-desc">Solar system inspection reports for CSLB/Contractor Complaints, Real Estate Transactions, Warranty Claims, and Maintenance. Includes completion status tracking, safety hazard checklist, and abandonment documentation.</div>
+        <div class="tool-refs">
+          <span class="ref-tag orange">CSLB Complaint</span>
+          <span class="ref-tag orange">Real Estate</span>
+          <span class="ref-tag orange">Warranty</span>
+          <span class="ref-tag orange">Maintenance</span>
+        </div>
+        <div class="tool-cta orange">
+          Open Solar Inspection
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ESTIMATION TOOLS -->
+  <div class="section-label">Estimation &amp; Calculation</div>
+  <div class="section-desc">Field calculation tools built to NEC standards for accurate estimates and code-compliant designs.</div>
+  <div class="tools-grid">
+
+    <!-- Roof Estimator -->
+    <a href="Roof_Replacement_Estimator_v70.html" class="tool-card accent-blue">
+      <div class="tool-icon blue">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category blue">Estimation</div>
+        <div class="tool-name">Roof Replacement Estimator</div>
+        <div class="tool-desc">Full roof replacement estimator with material pricing, labor, and scope breakdowns. Supports shingle, tile, and flat roof systems across all major product lines.</div>
+        <div class="tool-refs">
+          <span class="ref-tag blue">Shingles</span>
+          <span class="ref-tag blue">Tile</span>
+          <span class="ref-tag blue">Flat Roof</span>
+          <span class="ref-tag blue">Material Pricing</span>
+        </div>
+        <div class="tool-cta blue">
+          Open Estimator
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Attic Ventilation -->
+    <a href="Attic_Ventilation_Calculator.html" class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category">Ventilation</div>
+        <div class="tool-name">Attic Ventilation Calculator</div>
+        <div class="tool-desc">Calculate required net free area for attic ventilation per code. Supports O'Hagin profiles, GAF products, and 1:300 / 1:150 ratios with a WUI tab for fire-prone areas.</div>
+        <div class="tool-refs">
+          <span class="ref-tag">1:300 Ratio</span>
+          <span class="ref-tag">1:150 Ratio</span>
+          <span class="ref-tag">O'Hagin</span>
+          <span class="ref-tag">GAF Products</span>
+          <span class="ref-tag">WUI</span>
+        </div>
+        <div class="tool-cta">
+          Open Calculator
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- EV Charge Calculator -->
+    <a href="EV_Charge_Calculator_Fixed.html" class="tool-card accent-blue">
+      <div class="tool-icon blue">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category blue">EV Charging</div>
+        <div class="tool-name">EV Charge Time Calculator</div>
+        <div class="tool-desc">Calculate charge times for AC Level 1, Level 2, and DC Fast Chargers. Includes CC/CV taper phase breakdown and solar offset analysis for on-site generation.</div>
+        <div class="tool-refs">
+          <span class="ref-tag blue">NEC Art. 220</span>
+          <span class="ref-tag blue">SAE J1772</span>
+          <span class="ref-tag blue">DC Fast Charge</span>
+          <span class="ref-tag blue">Solar Offset</span>
+        </div>
+        <div class="tool-cta blue">
+          Open Calculator
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Voltage Drop -->
+    <a href="Voltage_Drop_Calculator_Fixed.html" class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category">Circuit Design</div>
+        <div class="tool-name">Voltage Drop Calculator</div>
+        <div class="tool-desc">Calculate voltage drop for any circuit using the NEC Chapter 9 K-factor method. Supports copper and aluminum conductors with pass/fail status indicators.</div>
+        <div class="tool-refs">
+          <span class="ref-tag">NEC 210.19</span>
+          <span class="ref-tag">NEC 215.2</span>
+          <span class="ref-tag">NEC 310.15</span>
+          <span class="ref-tag">K-Factor</span>
+        </div>
+        <div class="tool-cta">
+          Open Calculator
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+  <!-- ORDERING TOOLS -->
+  <div class="section-label">Ordering &amp; Procurement</div>
+  <div class="section-desc">Field order forms for custom fabrication and materials — submit directly to vendors from the job site.</div>
+  <div class="tools-grid">
+
+    <!-- Chase Cap Order Form -->
+    <a href="chase-cap-form-formspree%20(1).html" class="tool-card accent-blue">
+      <div class="tool-icon blue">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><rect x="9" y="14" width="6" height="8"/><circle cx="12" cy="8" r="1.5"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category blue">Custom Fabrication</div>
+        <div class="tool-name">Chase Cap Order Form</div>
+        <div class="tool-desc">Custom chimney chase cap order form with measurement diagrams, material selection (SS304, SS316, Copper, GSM), hole/flue location, fabrication options, and direct vendor email submission. Includes live order summary.</div>
+        <div class="tool-refs">
+          <span class="ref-tag blue">Custom Dimensions</span>
+          <span class="ref-tag blue">Stainless / Copper</span>
+          <span class="ref-tag blue">Vendor Email</span>
+          <span class="ref-tag blue">Live Summary</span>
+        </div>
+        <div class="tool-cta blue">
+          Open Order Form
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Material Order Form -->
+    <a href="material-order-form.html" class="tool-card">
+      <div class="tool-icon">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </div>
+      <div class="tool-body">
+        <div class="tool-category">Materials</div>
+        <div class="tool-name">Material Order Form</div>
+        <div class="tool-desc">Roofing material order form for QXO, ABC Supply, and Pacific Supply. Six-stage status workflow with Airtable integration for job costing and invoice comparison.</div>
+        <div class="tool-refs">
+          <span class="ref-tag">QXO Supply</span>
+          <span class="ref-tag">ABC Supply</span>
+          <span class="ref-tag">Pacific Supply</span>
+          <span class="ref-tag">Airtable Sync</span>
+        </div>
+        <div class="tool-cta">
+          Open Order Form
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+
+<footer>
+  <strong>Century Roof &amp; Solar</strong> &nbsp;·&nbsp; 30 Years Protecting Bay Area Homes &nbsp;·&nbsp; www.centuryrooftile.com &nbsp;·&nbsp; License 721502
+</footer>
+
+</body>
+</html>
