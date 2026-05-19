@@ -1,0 +1,17 @@
+{
+  "name": "Century Site Visit",
+  "short_name": "Site Visit",
+  "description": "Century Roof & Solar - Initial Site Visit Report",
+  "start_url": "century-site-visit-tool.html",
+  "display": "standalone",
+  "background_color": "#005c34",
+  "theme_color": "#005c34",
+  "icons": [
+    {
+      "src": "Century_Exact_Logo_WhiteBG.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
