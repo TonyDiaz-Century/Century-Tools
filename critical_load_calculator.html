@@ -844,7 +844,7 @@ select option { background: var(--surface); }
       <span class="tool-sub">Bidirectional Inverter · Backup Load Sizing</span>
     </div>
     <div class="header-ver">
-      <div class="ver-pill">v1.0.0 · 2026-04-21</div>
+      <div class="ver-pill">v1.1.0 · 2026-07-02</div>
     </div>
   </div>
 </header>
@@ -908,10 +908,11 @@ select option { background: var(--surface); }
           <label>Device Preset</label>
           <select id="devicePreset" onchange="applyDevicePreset()">
             <option value="dcbel_ara">dcbel Ara — 11.5 kW / 47.5A @ 240V</option>
-            <option value="enphase_iq8">Enphase IQ8 System — 7.68 kW / 32A @ 240V</option>
-            <option value="enphase_5p">Enphase IQ Battery 5P — 3.84 kW / 16A @ 240V</option>
+            <option value="enphase_10c">Enphase IQ Battery 10C — 7.08 kW / 29.5A per unit (up to 4)</option>
+            <option value="enphase_5p">Enphase IQ Battery 5P/5C — 3.84 kW / 16A per unit (up to 8)</option>
+            <option value="enphase_iq8">Enphase IQ8 Microinverter System — 7.68 kW / 32A</option>
             <option value="enphase_bidi">Enphase Bidirectional (coming) — 11.5 kW / 47.5A</option>
-            <option value="tesla_pw3">Tesla Powerwall 3 — 11.5 kW / 47.9A @ 240V</option>
+            <option value="tesla_pw3">Tesla Powerwall 3 — 11.5 kW / 47.9A per unit (up to 4)</option>
             <option value="franklin_apm">Franklin APsystems APstorage — 7.6 kW / 31.7A</option>
             <option value="custom">Custom Device</option>
           </select>
@@ -920,6 +921,14 @@ select option { background: var(--surface); }
         <div class="field">
           <label>Device Name / Label</label>
           <input type="text" id="deviceName" value="dcbel Ara">
+        </div>
+        <div class="field" id="unitCountField" style="display:none">
+          <label>Number of Units (Stacked)</label>
+          <div class="input-wrap">
+            <input type="number" id="unitCount" value="1" min="1" max="8" step="1" oninput="updateMeter()">
+            <span class="unit-tag">units</span>
+          </div>
+          <div class="hint" id="unitCountHint">Per-unit output × units = total system output</div>
         </div>
         <div class="field">
           <label>Backup Output Voltage</label>
@@ -956,7 +965,8 @@ select option { background: var(--surface); }
 
       <div class="device-spec-bar" id="deviceSpecBar">
         <div class="spec-item"><span class="spec-label">Device</span><span class="spec-val" id="specName">dcbel Ara</span></div>
-        <div class="spec-item"><span class="spec-label">Output</span><span class="spec-val" id="specOutput">47.5 A @ 240V</span></div>
+        <div class="spec-item" id="specUnitsItem" style="display:none"><span class="spec-label">Units</span><span class="spec-val" id="specUnits">1 × 16A</span></div>
+        <div class="spec-item"><span class="spec-label">Total Output</span><span class="spec-val" id="specOutput">47.5 A @ 240V</span></div>
         <div class="spec-item"><span class="spec-label">kW</span><span class="spec-val" id="specKW">11.4 kW</span></div>
         <div class="spec-item"><span class="spec-label">Safe Limit (80%)</span><span class="spec-val" id="specSafe">38.0 A</span></div>
         <div class="spec-item"><span class="spec-label">Recommended Feeder</span><span class="spec-val" id="specFeeder">60A / #6 Cu or #4 Al</span></div>
@@ -1176,24 +1186,26 @@ select option { background: var(--surface); }
   Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA ·
   <a href="tel:5107809498">510-780-9498</a> ·
   <a href="mailto:tonyd@centuryrooftile.com">tonyd@centuryrooftile.com</a> ·
-  Critical Load Panel Calculator v1.0.0
+  Critical Load Panel Calculator v1.1.0
 </footer>
 
 <script>
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.0.0';
-const APP_DATE    = '2026-04-21';
+const APP_VERSION = 'v1.1.0';
+const APP_DATE    = '2026-07-02';
 // ─────────────────────────────────────────
 
 // ── Device Presets ────────────────────────
 const DEVICE_PRESETS = {
-  dcbel_ara:    { name:'dcbel Ara',                   amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
-  enphase_iq8:  { name:'Enphase IQ8 System',          amps:32.0, volts:240, kw:7.68, feeder:50, wire:'#8 AWG Cu or #6 AWG Al' },
-  enphase_5p:   { name:'Enphase IQ Battery 5P',       amps:16.0, volts:240, kw:3.84, feeder:30, wire:'#10 AWG Cu or #8 AWG Al' },
-  enphase_bidi: { name:'Enphase Bidirectional',        amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
-  tesla_pw3:    { name:'Tesla Powerwall 3',            amps:47.9, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
-  franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al' },
-  custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer' },
+  // stackable:true = per-unit values; maxUnits = manufacturer stack limit
+  dcbel_ara:    { name:'dcbel Ara',                   amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:false, maxUnits:1 },
+  enphase_10c:  { name:'Enphase IQ Battery 10C',      amps:29.5, volts:240, kw:7.08, feeder:50, wire:'#8 AWG Cu or #6 AWG Al',  stackable:true,  maxUnits:4,  note:'10.0 kWh · 7.08 kW continuous per unit · max 4 units = 28.32 kW / 118A' },
+  enphase_5p:   { name:'Enphase IQ Battery 5P/5C',    amps:16.0, volts:240, kw:3.84, feeder:30, wire:'#10 AWG Cu or #8 AWG Al', stackable:true,  maxUnits:8,  note:'5.0 kWh · 3.84 kW continuous per unit · max 8 units = 30.72 kW / 128A' },
+  enphase_iq8:  { name:'Enphase IQ8 Microinverter System', amps:32.0, volts:240, kw:7.68, feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:false, maxUnits:1, note:'Array-level output — enter total system amps' },
+  enphase_bidi: { name:'Enphase Bidirectional (coming)', amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:false, maxUnits:1 },
+  tesla_pw3:    { name:'Tesla Powerwall 3',            amps:47.9, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:true,  maxUnits:4,  note:'11.5 kW per unit · up to 4 stacked = 46 kW / 191.6A' },
+  franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:false, maxUnits:1 },
+  custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer', stackable:false, maxUnits:1 },
 };
 
 // ── Load Presets ──────────────────────────
@@ -1250,14 +1262,50 @@ function applyDevicePreset() {
   const p   = DEVICE_PRESETS[key];
   if (!p) return;
   document.getElementById('deviceName').value    = p.name;
-  document.getElementById('deviceAmps').value    = p.amps;
   document.getElementById('deviceVoltage').value = p.volts;
   document.getElementById('feederAmps').value    = p.feeder;
+
+  const unitField = document.getElementById('unitCountField');
+  const unitInput = document.getElementById('unitCount');
+  const unitHint  = document.getElementById('unitCountHint');
+
+  if (p.stackable) {
+    unitField.style.display = '';
+    unitInput.max = p.maxUnits;
+    // Keep existing count but clamp to new max
+    const cur = parseInt(unitInput.value) || 1;
+    unitInput.value = Math.min(cur, p.maxUnits);
+    unitHint.textContent = p.note || `Per-unit: ${p.amps}A · Max ${p.maxUnits} units = ${fmt(p.amps * p.maxUnits, 1)}A total`;
+    document.getElementById('deviceAmps').value = fmt(p.amps * (parseInt(unitInput.value) || 1), 1);
+  } else {
+    unitField.style.display = 'none';
+    unitInput.value = 1;
+    document.getElementById('deviceAmps').value = p.amps;
+  }
   updateMeter();
 }
 
 // ── Update meter + spec bar ───────────────
 function updateMeter() {
+  // If stackable device, recalculate total amps from unit count × per-unit amps
+  const presetKey = document.getElementById('devicePreset').value;
+  const preset    = DEVICE_PRESETS[presetKey];
+  if (preset && preset.stackable) {
+    const units = parseInt(document.getElementById('unitCount').value) || 1;
+    const clampedUnits = Math.max(1, Math.min(units, preset.maxUnits));
+    document.getElementById('unitCount').value = clampedUnits;
+    document.getElementById('deviceAmps').value = fmt(preset.amps * clampedUnits, 1);
+    // Update spec units display
+    const specUnitsItem = document.getElementById('specUnitsItem');
+    if (specUnitsItem) {
+      specUnitsItem.style.display = '';
+      document.getElementById('specUnits').textContent = `${clampedUnits} × ${preset.amps}A`;
+    }
+  } else {
+    const specUnitsItem = document.getElementById('specUnitsItem');
+    if (specUnitsItem) specUnitsItem.style.display = 'none';
+  }
+
   const maxA  = getDeviceAmps();
   const safeA = getSafeAmps();
   const usedA = getActiveAmps();
