@@ -1205,7 +1205,7 @@ const DEVICE_PRESETS = {
   enphase_bidi: { name:'Enphase Bidirectional (coming)', amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:false, maxUnits:1 },
   tesla_pw3:    { name:'Tesla Powerwall 3',            amps:47.9, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:true,  maxUnits:4,  note:'11.5 kW per unit · up to 4 stacked = 46 kW / 191.6A' },
   franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:true,  maxUnits:3,  note:'7.6 kW / 31.7A per SCU · max 3 SCUs stacked = 22.8 kW / 95.1A total' },
-  custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer', stackable:false, maxUnits:1 },
+  custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer', stackable:true,  maxUnits:20, note:'Enter per-unit amps above · set unit count for stacked systems' },
 };
 
 // ── Load Presets ──────────────────────────
