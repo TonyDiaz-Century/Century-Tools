@@ -913,7 +913,7 @@ select option { background: var(--surface); }
             <option value="enphase_iq8">Enphase IQ8 Microinverter System — 7.68 kW / 32A</option>
             <option value="enphase_bidi">Enphase Bidirectional (coming) — 11.5 kW / 47.5A</option>
             <option value="tesla_pw3">Tesla Powerwall 3 — 11.5 kW / 47.9A per unit (up to 4)</option>
-            <option value="franklin_apm">Franklin APsystems APstorage — 7.6 kW / 31.7A</option>
+            <option value="franklin_apm">Franklin APsystems APstorage — 7.6 kW / 31.7A per unit (up to 3)</option>
             <option value="custom">Custom Device</option>
           </select>
           <div class="hint">Select your inverter or enter custom values below</div>
@@ -1204,7 +1204,7 @@ const DEVICE_PRESETS = {
   enphase_iq8:  { name:'Enphase IQ8 Microinverter System', amps:32.0, volts:240, kw:7.68, feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:false, maxUnits:1, note:'Array-level output — enter total system amps' },
   enphase_bidi: { name:'Enphase Bidirectional (coming)', amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:false, maxUnits:1 },
   tesla_pw3:    { name:'Tesla Powerwall 3',            amps:47.9, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al', stackable:true,  maxUnits:4,  note:'11.5 kW per unit · up to 4 stacked = 46 kW / 191.6A' },
-  franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:false, maxUnits:1 },
+  franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al', stackable:true,  maxUnits:3,  note:'7.6 kW / 31.7A per SCU · max 3 SCUs stacked = 22.8 kW / 95.1A total' },
   custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer', stackable:false, maxUnits:1 },
 };
 
