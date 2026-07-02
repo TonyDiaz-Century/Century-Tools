@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Critical Load Panel Calculator — Century Roof & Solar</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Root ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:       #1a5c2a;
+  --green-mid:   #2e7d32;
+  --green-light: #e8f5e9;
+  --gold:        #f9a825;
+  --gold-bg:     #fffde7;
+  --amber:       #e65100;
+  --red:         #c62828;
+  --red-bg:      #ffebee;
+  --blue:        #0277bd;
+  --blue-bg:     #e3f2fd;
+  --bg:          #f0f2f0;
+  --surface:     #ffffff;
+  --surface2:    #f7f9f7;
+  --border:      #dde5dd;
+  --border-dark: #b8ccb8;
+  --text:        #1a2e1a;
+  --text-mid:    #3d5040;
+  --text-muted:  #6b8070;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md:   0 3px 14px rgba(0,0,0,0.10);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.12);
+  --radius:      6px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 3px solid var(--green);
+  box-shadow: var(--shadow-sm);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 11px 0;
+  gap: 0;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  padding-right: 18px;
+}
+
+.logo-wrap img {
+  height: 54px;
+  width: auto;
+  display: block;
+}
+
+.header-divider {
+  width: 1px;
+  height: 46px;
+  background: var(--border-dark);
+  flex-shrink: 0;
+  margin: 0 18px;
+}
+
+.header-title { flex: 1; }
+
+.header-title .tool-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  line-height: 1;
+  display: block;
+}
+
+.header-title .tool-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 4px;
+}
+
+.header-ver {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.ver-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: var(--green-light);
+  border: 1px solid var(--border-dark);
+  border-radius: 2px;
+  padding: 3px 10px;
+  color: var(--green);
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+/* ── Warning banner ──────────────────────────────────────── */
+.internal-warning {
+  background: var(--gold-bg);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.internal-warning .warn-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5d4037;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.internal-warning p {
+  font-size: 12px;
+  color: #5d4037;
+  line-height: 1.6;
+}
+
+.internal-warning strong { color: #3e2723; }
+
+/* ── Main layout ─────────────────────────────────────────── */
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ── Live meter ──────────────────────────────────────────── */
+.meter-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 28px;
+  align-items: center;
+}
+
+@media (max-width: 680px) { .meter-panel { grid-template-columns: 1fr; text-align: center; } }
+
+/* Arc gauge */
+.gauge-wrap {
+  position: relative;
+  width: 160px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.gauge-wrap canvas {
+  display: block;
+}
+
+.gauge-center {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  line-height: 1.1;
+}
+
+.gauge-pct {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  display: block;
+  transition: color 0.3s;
+}
+
+.gauge-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Meter stats */
+.meter-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 780px) { .meter-stats { grid-template-columns: repeat(2,1fr); } }
+
+.stat-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.stat-block.stat-capacity { border-color: var(--green-mid); background: var(--green-light); }
+.stat-block.stat-used     { border-color: var(--blue);      background: var(--blue-bg); }
+.stat-block.stat-remain   { border-color: var(--green);     background: var(--green-light); }
+.stat-block.stat-safe     { border-color: var(--gold);      background: var(--gold-bg); }
+
+.stat-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+  display: block;
+}
+
+.stat-block.stat-capacity .stat-val { color: var(--green-mid); }
+.stat-block.stat-used     .stat-val { color: var(--blue); }
+.stat-block.stat-remain   .stat-val { color: var(--green); }
+.stat-block.stat-safe     .stat-val { color: var(--amber); }
+
+.stat-unit  { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+.stat-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; display: block; }
+
+/* Status indicator */
+.status-block { text-align: center; min-width: 120px; }
+
+.status-light {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status-light.ok     { background: #e8f5e9; box-shadow: 0 0 16px rgba(46,125,50,0.3); }
+.status-light.warn   { background: #fff8e1; box-shadow: 0 0 16px rgba(230,81,0,0.3); }
+.status-light.danger { background: #ffebee; box-shadow: 0 0 16px rgba(198,40,40,0.3); }
+
+.status-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--green);
+  transition: color 0.3s;
+}
+
+/* ── Device Config ───────────────────────────────────────── */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.section-head {
+  padding: 13px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.section-head-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-head-title::before {
+  content: '';
+  width: 3px;
+  height: 12px;
+  background: var(--green);
+  display: inline-block;
+  border-radius: 2px;
+}
+
+.section-body { padding: 18px 20px; }
+
+/* Device preset select + custom inputs */
+.device-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 640px) { .device-grid { grid-template-columns: 1fr; } }
+
+.field label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 5px;
+}
+
+.field input[type="number"],
+.field input[type="text"],
+.field select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field input:focus, .field select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(26,92,42,0.10);
+}
+
+.input-wrap { position: relative; display: flex; align-items: center; }
+.input-wrap input { padding-right: 48px; }
+.unit-tag {
+  position: absolute; right: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-muted);
+  pointer-events: none; letter-spacing: 1px;
+}
+
+.hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+/* Device spec summary bar */
+.device-spec-bar {
+  background: var(--green-light);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 10px 16px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--green);
+  margin-top: 4px;
+}
+
+.spec-item { display: flex; gap: 6px; align-items: center; }
+.spec-item .spec-label { color: var(--text-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.spec-item .spec-val { font-weight: 600; color: var(--green); }
+
+/* ── Load table ──────────────────────────────────────────── */
+.load-table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead tr {
+  background: var(--surface2);
+  border-bottom: 2px solid var(--border-dark);
+}
+
+thead th {
+  padding: 10px 12px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+tbody tr:hover { background: #f5fbf5; }
+tbody tr.row-active { background: rgba(26,92,42,0.04); }
+tbody tr.row-conflict { background: rgba(198,40,40,0.04); }
+
+tbody td {
+  padding: 9px 12px;
+  vertical-align: middle;
+}
+
+/* Category badge */
+.cat-badge {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.cat-critical  { background: #fce4ec; color: #880e4f; border: 1px solid #f48fb1; }
+.cat-comfort   { background: var(--blue-bg); color: #01579b; border: 1px solid #90caf9; }
+.cat-comms     { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+.cat-avoid     { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+.cat-custom    { background: #f3e5f5; color: #4a148c; border: 1px solid #ce93d8; }
+
+/* Toggle switch for load on/off */
+.load-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.toggle-track {
+  width: 38px;
+  height: 20px;
+  background: var(--border);
+  border-radius: 10px;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: left 0.2s, background 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle-track.on { background: var(--green-mid); }
+.toggle-track.on::after { left: 21px; }
+.toggle-track.conflict { background: var(--red); }
+
+/* Amps cell */
+.amps-cell {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--blue);
+}
+
+.amps-cell.active { color: var(--green); }
+.amps-cell.conflict { color: var(--red); }
+
+/* Priority badge */
+.priority-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.pri-1 { background: #ffebee; color: var(--red); border: 1px solid #ef9a9a; }
+.pri-2 { background: #fff8e1; color: var(--amber); border: 1px solid #ffe082; }
+.pri-3 { background: var(--green-light); color: var(--green); border: 1px solid #a5d6a7; }
+
+/* Delete button */
+.del-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 3px;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.del-btn:hover { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+/* ── Add load form ────────────────────────────────────────── */
+.add-load-panel {
+  background: var(--surface2);
+  border: 1px dashed var(--border-dark);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-top: 12px;
+}
+
+.add-load-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+@media (max-width: 700px) { .add-load-grid { grid-template-columns: 1fr 1fr; } }
+
+.add-btn {
+  padding: 9px 18px;
+  background: var(--green);
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 39px;
+  transition: background 0.15s;
+}
+
+.add-btn:hover { background: var(--green-mid); }
+
+/* ── Preset loader ────────────────────────────────────────── */
+.preset-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 0 4px;
+}
+
+.preset-btn {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-dark);
+  border-radius: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.preset-btn:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+/* ── Conflict list ───────────────────────────────────────── */
+.conflict-box {
+  background: var(--red-bg);
+  border: 1px solid #ef9a9a;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--red);
+  display: none;
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.8;
+}
+
+.conflict-box.show { display: block; }
+.conflict-box strong { color: #b71c1c; }
+
+/* ── NEC reference box ───────────────────────────────────── */
+.nec-box {
+  background: var(--blue-bg);
+  border: 1px solid #90caf9;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.nec-box-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nec-rows { display: flex; flex-direction: column; gap: 6px; }
+
+.nec-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 12px;
+}
+
+.nec-art {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: var(--blue);
+  min-width: 80px;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+
+.nec-desc { color: var(--text-mid); line-height: 1.6; }
+.nec-desc strong { color: var(--text); }
+
+/* ── Results / Schedule ──────────────────────────────────── */
+.results-section { display: none; }
+.results-section.visible { display: block; }
+
+.schedule-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.schedule-actions { display: flex; gap: 8px; }
+
+.print-btn {
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.print-btn:hover { background: var(--green-light); }
+
+.save-btn {
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--amber);
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.save-btn:hover { background: var(--gold-bg); }
+
+.copy-btn {
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--border-dark);
+  color: var(--text-muted);
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover { border-color: var(--text-muted); color: var(--text); }
+
+/* Summary tiles */
+.result-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 700px) { .result-tiles { grid-template-columns: repeat(2,1fr); } }
+
+.r-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 13px;
+  text-align: center;
+}
+
+.r-tile.r-primary { border-color: var(--green); background: var(--green-light); }
+.r-tile.r-warn    { border-color: var(--gold);  background: var(--gold-bg); }
+.r-tile.r-danger  { border-color: var(--red);   background: var(--red-bg); }
+
+.r-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.r-tile.r-primary .r-val { color: var(--green); }
+.r-tile.r-warn    .r-val { color: var(--amber); }
+.r-tile.r-danger  .r-val { color: var(--red); }
+
+.r-unit  { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); }
+.r-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block; }
+
+/* Summary text */
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+.summary-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-label::before { content: ''; width: 3px; height: 11px; background: var(--green); display: inline-block; border-radius: 2px; }
+
+.summary-text { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+.summary-text strong { color: var(--text); }
+
+/* ── Feeder sizing recommendation ────────────────────────── */
+.feeder-rec {
+  background: var(--green-light);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.9;
+}
+
+.feeder-rec strong { color: var(--green); }
+
+/* ── Footer ──────────────────────────────────────────────── */
+footer {
+  background: var(--green);
+  color: rgba(255,255,255,0.6);
+  padding: 22px 24px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-top: 40px;
+}
+
+footer a { color: rgba(255,255,255,0.75); text-decoration: none; }
+footer a:hover { color: #fff; }
+
+/* ── Print ────────────────────────────────────────────────── */
+.print-only { display: none; }
+
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; font-size: 11px; }
+  header, .internal-warning, .section-card, .nec-box,
+  .add-load-panel, .preset-strip, .schedule-actions,
+  .meter-panel, .conflict-box { display: none !important; }
+  .results-section { display: block !important; }
+  .print-only { display: block !important; }
+  .summary-card, .section-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+  footer { background: #fff !important; color: #aaa !important; border-top: 1px solid #ccc; }
+}
+
+/* ── Responsive misc ─────────────────────────────────────── */
+@media (max-width: 500px) {
+  .header-ver { display: none; }
+  .logo-wrap img { height: 42px; }
+}
+
+select option { background: var(--surface); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <a class="logo-wrap" href="index.html">
+      <img src="century_logo.png" alt="Century Roof &amp; Solar">
+    </a>
+    <div class="header-divider"></div>
+    <div class="header-title">
+      <span class="tool-name">Critical Load Panel Calculator</span>
+      <span class="tool-sub">Bidirectional Inverter · Backup Load Sizing</span>
+    </div>
+    <div class="header-ver">
+      <div class="ver-pill">v1.0.0 · 2026-04-21</div>
+    </div>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- Internal warning -->
+  <div class="internal-warning">
+    <div class="warn-title">⚠ Internal Preliminary Tool — Not a Stamped Calculation</div>
+    <p>This calculator is an internal aid for Century Roof &amp; Solar. Results are preliminary estimates based on <strong>NEC 2023</strong> provisions and inverter manufacturer specifications. <strong>Not for permit submittal, AHJ documentation, or customer deliverables without review and sign-off by a licensed electrician or PE.</strong> Inverter output limits, transfer switch requirements, and utility interconnection rules must be verified with the AHJ and manufacturer (dcbel, Enphase, etc.) before installation.</p>
+  </div>
+
+  <!-- ── Live Meter ── -->
+  <div class="meter-panel">
+    <div class="gauge-wrap">
+      <canvas id="gaugeCanvas" width="160" height="110"></canvas>
+      <div class="gauge-center">
+        <span class="gauge-pct" id="gaugePct">0%</span>
+        <span class="gauge-label">of capacity</span>
+      </div>
+    </div>
+
+    <div class="meter-stats">
+      <div class="stat-block stat-capacity">
+        <span class="stat-val" id="statCapacity">47.5</span>
+        <span class="stat-unit">A</span>
+        <span class="stat-label">Inverter Output</span>
+      </div>
+      <div class="stat-block stat-safe">
+        <span class="stat-val" id="statSafe">38.0</span>
+        <span class="stat-unit">A</span>
+        <span class="stat-label">80% Safe Limit</span>
+      </div>
+      <div class="stat-block stat-used">
+        <span class="stat-val" id="statUsed">0.0</span>
+        <span class="stat-unit">A</span>
+        <span class="stat-label">Active Loads</span>
+      </div>
+      <div class="stat-block stat-remain">
+        <span class="stat-val" id="statRemain">38.0</span>
+        <span class="stat-unit">A</span>
+        <span class="stat-label">Remaining</span>
+      </div>
+    </div>
+
+    <div class="status-block">
+      <div class="status-light ok" id="statusLight">✓</div>
+      <div class="status-text" id="statusText">OK</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:4px;" id="statusSub">Within safe limit</div>
+    </div>
+  </div>
+
+  <!-- ── Device Configuration ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-head-title">1. Inverter / Device Configuration</div>
+    </div>
+    <div class="section-body">
+      <div class="device-grid">
+        <div class="field">
+          <label>Device Preset</label>
+          <select id="devicePreset" onchange="applyDevicePreset()">
+            <option value="dcbel_ara">dcbel Ara — 11.5 kW / 47.5A @ 240V</option>
+            <option value="enphase_iq8">Enphase IQ8 System — 7.68 kW / 32A @ 240V</option>
+            <option value="enphase_5p">Enphase IQ Battery 5P — 3.84 kW / 16A @ 240V</option>
+            <option value="enphase_bidi">Enphase Bidirectional (coming) — 11.5 kW / 47.5A</option>
+            <option value="tesla_pw3">Tesla Powerwall 3 — 11.5 kW / 47.9A @ 240V</option>
+            <option value="franklin_apm">Franklin APsystems APstorage — 7.6 kW / 31.7A</option>
+            <option value="custom">Custom Device</option>
+          </select>
+          <div class="hint">Select your inverter or enter custom values below</div>
+        </div>
+        <div class="field">
+          <label>Device Name / Label</label>
+          <input type="text" id="deviceName" value="dcbel Ara">
+        </div>
+        <div class="field">
+          <label>Backup Output Voltage</label>
+          <select id="deviceVoltage">
+            <option value="240">240V single-phase</option>
+            <option value="208">208V (3Ø delta)</option>
+            <option value="120">120V single-phase</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Rated Backup Output (A)</label>
+          <div class="input-wrap">
+            <input type="number" id="deviceAmps" value="47.5" min="1" max="400" step="0.1" oninput="updateMeter()">
+            <span class="unit-tag">A</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Continuous Limit (%) — 80% Rule</label>
+          <div class="input-wrap">
+            <input type="number" id="contPct" value="80" min="50" max="100" step="1" oninput="updateMeter()">
+            <span class="unit-tag">%</span>
+          </div>
+          <div class="hint">NEC 705.12 / 625.42 — 80% for continuous loads</div>
+        </div>
+        <div class="field">
+          <label>Feeder to Subpanel (A) — Auto-calc</label>
+          <div class="input-wrap">
+            <input type="number" id="feederAmps" value="60" min="15" max="400" step="5" oninput="updateMeter()">
+            <span class="unit-tag">A</span>
+          </div>
+          <div class="hint">NEC 215.2: 125% of device output. Min recommended: 60A</div>
+        </div>
+      </div>
+
+      <div class="device-spec-bar" id="deviceSpecBar">
+        <div class="spec-item"><span class="spec-label">Device</span><span class="spec-val" id="specName">dcbel Ara</span></div>
+        <div class="spec-item"><span class="spec-label">Output</span><span class="spec-val" id="specOutput">47.5 A @ 240V</span></div>
+        <div class="spec-item"><span class="spec-label">kW</span><span class="spec-val" id="specKW">11.4 kW</span></div>
+        <div class="spec-item"><span class="spec-label">Safe Limit (80%)</span><span class="spec-val" id="specSafe">38.0 A</span></div>
+        <div class="spec-item"><span class="spec-label">Recommended Feeder</span><span class="spec-val" id="specFeeder">60A / #6 Cu or #4 Al</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NEC Reference ── -->
+  <div class="nec-box">
+    <div class="nec-box-title">📋 Applicable NEC Code Sections</div>
+    <div class="nec-rows">
+      <div class="nec-row">
+        <div class="nec-art">705.12(B)</div>
+        <div class="nec-desc"><strong>Load Side Connection.</strong> The sum of all overcurrent devices (utility + inverter) connected to a busbar shall not exceed 120% of the busbar rating. Critical load panel must be sized accordingly.</div>
+      </div>
+      <div class="nec-row">
+        <div class="nec-art">702.7</div>
+        <div class="nec-desc"><strong>Optional Standby System — Load Calculations.</strong> The calculated load of the standby system shall not exceed the capacity of the power source. No demand factor permitted when sizing inverter-backed circuits — use 100% of nameplate.</div>
+      </div>
+      <div class="nec-row">
+        <div class="nec-art">215.2(A)(1)</div>
+        <div class="nec-desc"><strong>Feeder Ampacity.</strong> Feeders supplying continuous loads shall be sized at <strong>125% of the continuous load current</strong>. Feeder from inverter to critical load panel: 47.5A × 125% = 59.4A → use <strong>60A breaker / #6 AWG Cu</strong>.</div>
+      </div>
+      <div class="nec-row">
+        <div class="nec-art">230.79(C)</div>
+        <div class="nec-desc"><strong>Service Disconnect Rating.</strong> For dwellings with loads exceeding 10 kVA, minimum 100A service. Critical load panel disconnect must be rated ≥ inverter output capacity.</div>
+      </div>
+      <div class="nec-row">
+        <div class="nec-art">220.83(B)</div>
+        <div class="nec-desc"><strong>Existing Dwelling Load Calc.</strong> When sizing the main service panel load calc to confirm the critical load panel feeder, use 220.83(B). <strong>However, for the inverter-backed panel itself, NO demand factors apply</strong> — the inverter cannot absorb overload spikes the way a utility transformer can. Use 100% of all simultaneous loads.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Critical Load Table ── -->
+  <div class="section-card">
+    <div class="section-head">
+      <div class="section-head-title">2. Critical Load Schedule</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);">Toggle loads ON to include in active draw calculation</div>
+    </div>
+    <div class="section-body" style="padding-bottom:8px">
+
+      <!-- Preset loader -->
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Quick-Add Common Loads</div>
+      <div class="preset-strip">
+        <button class="preset-btn" onclick="addPreset('refrigerator')">🧊 Refrigerator</button>
+        <button class="preset-btn" onclick="addPreset('sump')">💧 Sump Pump</button>
+        <button class="preset-btn" onclick="addPreset('lighting')">💡 Lighting Circuit</button>
+        <button class="preset-btn" onclick="addPreset('outlets')">🔌 Outlet Circuit</button>
+        <button class="preset-btn" onclick="addPreset('router')">📡 Router/Modem</button>
+        <button class="preset-btn" onclick="addPreset('medical')">❤️ Medical Equipment</button>
+        <button class="preset-btn" onclick="addPreset('well')">🚿 Well Pump</button>
+        <button class="preset-btn" onclick="addPreset('garage')">🚗 Garage Door</button>
+        <button class="preset-btn" onclick="addPreset('minisplit')">❄️ Mini-Split (small)</button>
+        <button class="preset-btn" onclick="addPreset('tv')">📺 TV / Entertainment</button>
+        <button class="preset-btn" onclick="addPreset('evse_l1')">⚡ EVSE Level 1 (120V)</button>
+        <button class="preset-btn" onclick="addPreset('security')">🔒 Security System</button>
+      </div>
+
+      <!-- Load table -->
+      <div class="load-table-wrap">
+        <table id="loadTable">
+          <thead>
+            <tr>
+              <th>Active</th>
+              <th>Load Description</th>
+              <th>Category</th>
+              <th>Watts</th>
+              <th>Amps @ 240V</th>
+              <th>Priority</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="loadTableBody">
+            <!-- Pre-populated with sensible defaults for a dcbel Ara install -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Conflict alert -->
+      <div class="conflict-box" id="conflictBox"></div>
+
+      <!-- Add custom load form -->
+      <div class="add-load-panel">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;">+ Add Custom Load</div>
+        <div class="add-load-grid">
+          <div class="field">
+            <label>Load Description</label>
+            <input type="text" id="newDesc" placeholder="e.g. Bathroom outlets">
+          </div>
+          <div class="field">
+            <label>Watts</label>
+            <input type="number" id="newWatts" placeholder="1200" min="1" max="50000" step="1">
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="newCat">
+              <option value="critical">Life Safety</option>
+              <option value="comfort">Comfort</option>
+              <option value="comms">Communications</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Priority</label>
+            <select id="newPri">
+              <option value="1">1 — Must Have</option>
+              <option value="2" selected>2 — Important</option>
+              <option value="3">3 — Nice to Have</option>
+            </select>
+          </div>
+          <div class="field">
+            <button class="add-btn" onclick="addCustomLoad()">+ Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Generate Schedule Button ── -->
+  <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+    <button onclick="generateSchedule()" style="flex:3;padding:15px;background:var(--green);color:#fff;font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:3px;border:none;border-radius:4px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#2e7d32'" onmouseout="this.style.background='var(--green)'">GENERATE CRITICAL LOAD SCHEDULE</button>
+    <button onclick="resetAll()" style="flex:1;padding:15px;background:transparent;color:var(--text-muted);border:1px solid var(--border-dark);font-family:'Oswald',sans-serif;font-size:17px;letter-spacing:2px;border-radius:4px;cursor:pointer;">↺ RESET</button>
+  </div>
+
+  <!-- ── Results / Schedule ── -->
+  <div class="results-section" id="resultsSection">
+
+    <!-- Print header -->
+    <div class="print-only" style="margin-bottom:20px;border-bottom:2px solid #1a5c2a;padding-bottom:14px;">
+      <div style="font-size:10px;color:#888;letter-spacing:2px;font-family:monospace;text-transform:uppercase;">Century Roof &amp; Solar · Critical Load Panel Schedule</div>
+      <div style="font-size:20px;font-weight:700;color:#1a5c2a;font-family:sans-serif;margin-top:4px;" id="printTitle"></div>
+      <div style="font-size:11px;color:#aaa;font-family:monospace;" id="printDate"></div>
+    </div>
+
+    <div class="schedule-head">
+      <div class="section-head-title" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;display:flex;align-items:center;gap:8px;">
+        <span style="width:3px;height:12px;background:var(--green);display:inline-block;border-radius:2px;"></span>
+        Critical Load Schedule — Results
+      </div>
+      <div class="schedule-actions">
+        <button class="copy-btn" onclick="copySchedule()">Copy Summary</button>
+        <button class="print-btn" onclick="printSchedule()">🖨 Print</button>
+        <button class="save-btn" onclick="saveSchedule()">💾 Save HTML</button>
+      </div>
+    </div>
+
+    <!-- Result tiles -->
+    <div class="result-tiles">
+      <div class="r-tile r-primary">
+        <div class="r-val" id="res_device">dcbel Ara</div>
+        <div class="r-unit">inverter</div>
+        <div class="r-label">Device</div>
+      </div>
+      <div class="r-tile">
+        <div class="r-val" id="res_capacity">47.5</div>
+        <div class="r-unit">A output</div>
+        <div class="r-label">Rated Capacity</div>
+      </div>
+      <div class="r-tile">
+        <div class="r-val" id="res_activeAmps">0.0</div>
+        <div class="r-unit">A active</div>
+        <div class="r-label">Active Load Draw</div>
+      </div>
+      <div class="r-tile" id="res_headroomTile">
+        <div class="r-val" id="res_headroom">38.0</div>
+        <div class="r-unit">A remaining</div>
+        <div class="r-label">Headroom (80%)</div>
+      </div>
+      <div class="r-tile" id="res_statusTile">
+        <div class="r-val" id="res_status" style="font-size:18px;">✓ OK</div>
+        <div class="r-label" id="res_statusLabel">Compliant</div>
+      </div>
+    </div>
+
+    <!-- Feeder recommendation -->
+    <div class="feeder-rec" id="feederRec" style="margin-bottom:14px;"></div>
+
+    <!-- Schedule table -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-title">Active Load Schedule (Enabled Loads Only)</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Load Description</th>
+              <th>Category</th>
+              <th>Watts</th>
+              <th>Amps</th>
+              <th>% of Safe Capacity</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Summary text -->
+    <div class="summary-card">
+      <div class="summary-label">
+        <button class="copy-btn" onclick="copySchedule()" style="margin-left:auto;float:right;margin-top:-4px;">Copy</button>
+        Job Summary
+      </div>
+      <div class="summary-text" id="summaryText"></div>
+    </div>
+
+  </div><!-- end results -->
+
+</div><!-- end page-wrap -->
+
+<footer>
+  Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA ·
+  <a href="tel:5107809498">510-780-9498</a> ·
+  <a href="mailto:tonyd@centuryrooftile.com">tonyd@centuryrooftile.com</a> ·
+  Critical Load Panel Calculator v1.0.0
+</footer>
+
+<script>
+// ── VERSION ──────────────────────────────
+const APP_VERSION = 'v1.0.0';
+const APP_DATE    = '2026-04-21';
+// ─────────────────────────────────────────
+
+// ── Device Presets ────────────────────────
+const DEVICE_PRESETS = {
+  dcbel_ara:    { name:'dcbel Ara',                   amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
+  enphase_iq8:  { name:'Enphase IQ8 System',          amps:32.0, volts:240, kw:7.68, feeder:50, wire:'#8 AWG Cu or #6 AWG Al' },
+  enphase_5p:   { name:'Enphase IQ Battery 5P',       amps:16.0, volts:240, kw:3.84, feeder:30, wire:'#10 AWG Cu or #8 AWG Al' },
+  enphase_bidi: { name:'Enphase Bidirectional',        amps:47.5, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
+  tesla_pw3:    { name:'Tesla Powerwall 3',            amps:47.9, volts:240, kw:11.5, feeder:60, wire:'#6 AWG Cu or #4 AWG Al' },
+  franklin_apm: { name:'Franklin APsystems APstorage', amps:31.7, volts:240, kw:7.6,  feeder:50, wire:'#8 AWG Cu or #6 AWG Al' },
+  custom:       { name:'Custom Device',               amps:47.5, volts:240, kw:11.4, feeder:60, wire:'Verify with manufacturer' },
+};
+
+// ── Load Presets ──────────────────────────
+const LOAD_PRESETS = {
+  refrigerator: { desc:'Refrigerator',            watts:150,  cat:'critical', pri:1, notes:'Running avg ~150W; startup ~600W' },
+  sump:         { desc:'Sump Pump (1/2 HP)',       watts:750,  cat:'critical', pri:1, notes:'Motor load — inrush ~3× nameplate; size breaker accordingly' },
+  lighting:     { desc:'Lighting Circuit',         watts:960,  cat:'comfort',  pri:2, notes:'10× 8W LED = ~80W typical; 960W circuit capacity' },
+  outlets:      { desc:'General Outlet Circuit',   watts:1800, cat:'comfort',  pri:3, notes:'15A circuit @ 120V = 1800W max' },
+  router:       { desc:'Router / Modem / WiFi',    watts:50,   cat:'comms',    pri:1, notes:'Essential for remote monitoring of inverter' },
+  medical:      { desc:'Medical Equipment',        watts:400,  cat:'critical', pri:1, notes:'Verify actual nameplate — life safety load' },
+  well:         { desc:'Well Pump (1/2 HP)',        watts:750,  cat:'critical', pri:1, notes:'Motor load — verify HP and FLA; may need dedicated circuit' },
+  garage:       { desc:'Garage Door Opener',       watts:300,  cat:'comfort',  pri:3, notes:'Brief duty cycle — ~300W running' },
+  minisplit:    { desc:'Mini-Split (9000 BTU)',     watts:850,  cat:'comfort',  pri:2, notes:'Variable speed — use nameplate MCA for sizing' },
+  tv:           { desc:'TV / Entertainment',       watts:200,  cat:'comfort',  pri:3, notes:'Varies by size; 65" ≈ 120–200W' },
+  evse_l1:      { desc:'EVSE Level 1 (120V/12A)',  watts:1440, cat:'comfort',  pri:3, notes:'12A × 120V = 1440W — lowest priority during outage' },
+  security:     { desc:'Security System / Cameras',watts:100,  cat:'comms',    pri:1, notes:'Panel + cameras — verify UPS backup already installed' },
+};
+
+// ── App State ─────────────────────────────
+let loads = [];
+let loadIdCounter = 0;
+
+// Default loads on page load
+const DEFAULT_LOADS = [
+  { desc:'Refrigerator',        watts:150,  cat:'critical', pri:1, active:true,  notes:'Running avg ~150W' },
+  { desc:'Lighting Circuit 1',  watts:480,  cat:'comfort',  pri:2, active:true,  notes:'6× 8W LED downlights' },
+  { desc:'Lighting Circuit 2',  watts:480,  cat:'comfort',  pri:2, active:true,  notes:'Hallway / bedroom lights' },
+  { desc:'General Outlets',     watts:500,  cat:'comfort',  pri:3, active:true,  notes:'Phone/laptop charging, misc' },
+  { desc:'Router / Modem',      watts:50,   cat:'comms',    pri:1, active:true,  notes:'Required for inverter monitoring' },
+  { desc:'Security System',     watts:80,   cat:'comms',    pri:1, active:true,  notes:'Panel + 4 cameras' },
+];
+
+function initDefaultLoads() {
+  DEFAULT_LOADS.forEach(l => addLoad(l.desc, l.watts, l.cat, l.pri, l.notes, l.active));
+}
+
+// ── Utility ───────────────────────────────
+function getDeviceAmps()  { return parseFloat(document.getElementById('deviceAmps').value) || 47.5; }
+function getDeviceVolts() { return parseFloat(document.getElementById('deviceVoltage').value) || 240; }
+function getContPct()     { return parseFloat(document.getElementById('contPct').value) / 100 || 0.8; }
+function getSafeAmps()    { return getDeviceAmps() * getContPct(); }
+function wattsToAmps(w)   { return w / getDeviceVolts(); }
+function fmt(n, d=1)      { return parseFloat(n.toFixed(d)); }
+
+function getActiveAmps() {
+  return loads
+    .filter(l => l.active)
+    .reduce((s, l) => s + wattsToAmps(l.watts), 0);
+}
+
+// ── Apply device preset ───────────────────
+function applyDevicePreset() {
+  const key = document.getElementById('devicePreset').value;
+  const p   = DEVICE_PRESETS[key];
+  if (!p) return;
+  document.getElementById('deviceName').value    = p.name;
+  document.getElementById('deviceAmps').value    = p.amps;
+  document.getElementById('deviceVoltage').value = p.volts;
+  document.getElementById('feederAmps').value    = p.feeder;
+  updateMeter();
+}
+
+// ── Update meter + spec bar ───────────────
+function updateMeter() {
+  const maxA  = getDeviceAmps();
+  const safeA = getSafeAmps();
+  const usedA = getActiveAmps();
+  const remA  = Math.max(0, safeA - usedA);
+  const pct   = maxA > 0 ? Math.min(120, (usedA / safeA) * 100) : 0;
+  const volts = getDeviceVolts();
+  const kw    = (maxA * volts / 1000);
+  const feeder= parseFloat(document.getElementById('feederAmps').value) || 60;
+
+  // Wire size recommendation
+  let wireRec = '#6 AWG Cu or #4 AWG Al';
+  if (feeder <= 20) wireRec = '#12 AWG Cu or #10 AWG Al';
+  else if (feeder <= 30) wireRec = '#10 AWG Cu or #8 AWG Al';
+  else if (feeder <= 40) wireRec = '#8 AWG Cu or #6 AWG Al';
+  else if (feeder <= 60) wireRec = '#6 AWG Cu or #4 AWG Al';
+  else if (feeder <= 100) wireRec = '#4 AWG Cu or #2 AWG Al';
+  else if (feeder <= 125) wireRec = '#2 AWG Cu or 1/0 AWG Al';
+  else wireRec = 'Verify with NEC 310.15';
+
+  // Stats
+  document.getElementById('statCapacity').textContent = fmt(maxA);
+  document.getElementById('statSafe').textContent     = fmt(safeA);
+  document.getElementById('statUsed').textContent     = fmt(usedA);
+  document.getElementById('statRemain').textContent   = fmt(remA);
+
+  // Gauge pct
+  const gEl = document.getElementById('gaugePct');
+  gEl.textContent = Math.round(pct) + '%';
+
+  // Status
+  const sLight = document.getElementById('statusLight');
+  const sText  = document.getElementById('statusText');
+  const sSub   = document.getElementById('statusSub');
+
+  if (pct <= 80) {
+    sLight.className = 'status-light ok';
+    sLight.textContent = '✓';
+    sText.style.color = 'var(--green)';
+    sText.textContent = 'OK';
+    sSub.textContent  = 'Within safe limit';
+    gEl.style.color   = 'var(--green)';
+  } else if (pct <= 100) {
+    sLight.className = 'status-light warn';
+    sLight.textContent = '⚠';
+    sText.style.color = 'var(--amber)';
+    sText.textContent = 'NEAR LIMIT';
+    sSub.textContent  = 'Above 80% — monitor closely';
+    gEl.style.color   = 'var(--amber)';
+  } else {
+    sLight.className = 'status-light danger';
+    sLight.textContent = '✗';
+    sText.style.color = 'var(--red)';
+    sText.textContent = 'OVERLOADED';
+    sSub.textContent  = 'Exceeds rated output!';
+    gEl.style.color   = 'var(--red)';
+  }
+
+  // Draw gauge arc
+  drawGauge(pct);
+
+  // Spec bar
+  const recFeeder = Math.ceil(maxA * 1.25 / 5) * 5;
+  document.getElementById('specName').textContent    = document.getElementById('deviceName').value;
+  document.getElementById('specOutput').textContent  = `${maxA}A @ ${volts}V`;
+  document.getElementById('specKW').textContent      = `${fmt(kw)} kW`;
+  document.getElementById('specSafe').textContent    = `${fmt(safeA)} A`;
+  document.getElementById('specFeeder').textContent  = `${recFeeder}A / ${wireRec}`;
+
+  // Conflict check
+  checkConflicts();
+}
+
+// ── Arc gauge drawing ─────────────────────
+function drawGauge(pct) {
+  const canvas = document.getElementById('gaugeCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H - 14;
+  const r  = 66;
+  const startAngle = Math.PI;
+  const endAngle   = 2 * Math.PI;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startAngle, endAngle);
+  ctx.strokeStyle = '#dde5dd';
+  ctx.lineWidth   = 12;
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+
+  // Fill — color by zone
+  const fillAngle = startAngle + (Math.min(pct, 120) / 120) * Math.PI;
+  let color = '#2e7d32';
+  if (pct > 80)  color = '#e65100';
+  if (pct > 100) color = '#c62828';
+
+  if (pct > 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, fillAngle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 12;
+    ctx.lineCap     = 'round';
+    ctx.stroke();
+  }
+
+  // 80% threshold tick
+  const tickAngle = startAngle + (80 / 120) * Math.PI;
+  const tx1 = cx + (r - 18) * Math.cos(tickAngle);
+  const ty1 = cy + (r - 18) * Math.sin(tickAngle);
+  const tx2 = cx + (r + 6)  * Math.cos(tickAngle);
+  const ty2 = cy + (r + 6)  * Math.sin(tickAngle);
+  ctx.beginPath();
+  ctx.moveTo(tx1, ty1);
+  ctx.lineTo(tx2, ty2);
+  ctx.strokeStyle = '#f9a825';
+  ctx.lineWidth   = 2;
+  ctx.stroke();
+
+  // Labels
+  ctx.font         = '9px JetBrains Mono, monospace';
+  ctx.fillStyle    = '#6b8070';
+  ctx.textAlign    = 'left';
+  ctx.fillText('0%', 8, cy + 16);
+  ctx.textAlign    = 'right';
+  ctx.fillText('120%', W - 8, cy + 16);
+  ctx.textAlign    = 'center';
+  ctx.fillStyle    = '#e65100';
+  ctx.fillText('80%', cx + Math.cos(tickAngle) * (r + 16), cy + Math.sin(tickAngle) * (r + 16) + 4);
+}
+
+// ── Add load to table ─────────────────────
+function addLoad(desc, watts, cat, pri, notes, active=true) {
+  const id = ++loadIdCounter;
+  loads.push({ id, desc, watts, cat, pri, notes: notes||'', active });
+  renderLoadRow(loads[loads.length - 1]);
+  updateMeter();
+  return id;
+}
+
+function renderLoadRow(load) {
+  const tbody  = document.getElementById('loadTableBody');
+  const volts  = getDeviceVolts();
+  const amps   = wattsToAmps(load.watts);
+  const tr     = document.createElement('tr');
+  tr.id        = 'row_' + load.id;
+  tr.className = load.active ? 'row-active' : '';
+
+  tr.innerHTML = `
+    <td>
+      <button class="toggle-track ${load.active ? 'on' : ''}" id="tog_${load.id}"
+        onclick="toggleLoad(${load.id})" title="${load.active ? 'Enabled' : 'Disabled'}"></button>
+    </td>
+    <td style="font-weight:500;color:var(--text);min-width:160px">${load.desc}</td>
+    <td><span class="cat-badge cat-${load.cat}">${catLabel(load.cat)}</span></td>
+    <td class="num-cell" style="font-family:'JetBrains Mono',monospace;">${load.watts.toLocaleString()} W</td>
+    <td class="amps-cell ${load.active ? 'active' : ''}" id="ampcell_${load.id}">${fmt(amps,2)} A</td>
+    <td><span class="priority-badge pri-${load.pri}">${priLabel(load.pri)}</span></td>
+    <td style="font-size:11px;color:var(--text-muted);max-width:180px">${load.notes}</td>
+    <td><button class="del-btn" onclick="deleteLoad(${load.id})" title="Remove">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function catLabel(cat) {
+  return { critical:'Life Safety', comfort:'Comfort', comms:'Comms', avoid:'Avoid', custom:'Custom' }[cat] || cat;
+}
+
+function priLabel(pri) {
+  return { 1:'1 — Must', 2:'2 — Important', 3:'3 — Nice' }[pri] || pri;
+}
+
+// ── Toggle load on/off ────────────────────
+function toggleLoad(id) {
+  const load = loads.find(l => l.id === id);
+  if (!load) return;
+  load.active = !load.active;
+  const tog = document.getElementById('tog_' + id);
+  const row = document.getElementById('row_' + id);
+  const amp = document.getElementById('ampcell_' + id);
+  tog.className = 'toggle-track ' + (load.active ? 'on' : '');
+  row.className = load.active ? 'row-active' : '';
+  if (amp) amp.className = 'amps-cell ' + (load.active ? 'active' : '');
+  updateMeter();
+}
+
+// ── Delete load ───────────────────────────
+function deleteLoad(id) {
+  loads = loads.filter(l => l.id !== id);
+  const row = document.getElementById('row_' + id);
+  if (row) row.remove();
+  updateMeter();
+}
+
+// ── Add preset ────────────────────────────
+function addPreset(key) {
+  const p = LOAD_PRESETS[key];
+  if (!p) return;
+  addLoad(p.desc, p.watts, p.cat, p.pri, p.notes, true);
+}
+
+// ── Add custom load ───────────────────────
+function addCustomLoad() {
+  const desc  = document.getElementById('newDesc').value.trim();
+  const watts = parseFloat(document.getElementById('newWatts').value);
+  const cat   = document.getElementById('newCat').value;
+  const pri   = parseInt(document.getElementById('newPri').value);
+
+  if (!desc) { alert('Please enter a load description.'); return; }
+  if (!watts || watts <= 0) { alert('Please enter a valid wattage.'); return; }
+
+  addLoad(desc, watts, cat, pri, '', true);
+  document.getElementById('newDesc').value  = '';
+  document.getElementById('newWatts').value = '';
+}
+
+// ── Conflict check ────────────────────────
+function checkConflicts() {
+  const safeA  = getSafeAmps();
+  const usedA  = getActiveAmps();
+  const box    = document.getElementById('conflictBox');
+
+  if (usedA > safeA) {
+    const overA = usedA - safeA;
+    box.className = 'conflict-box show';
+    box.innerHTML = `<strong>⚠ OVERLOAD — ${fmt(usedA,2)}A active exceeds ${fmt(safeA,1)}A safe limit by ${fmt(overA,2)}A</strong><br>
+    Disable lower-priority loads until total drops below ${fmt(safeA,1)}A. Suggested: disable Priority 3 loads first.<br>
+    Priority 3 loads currently active: ${loads.filter(l=>l.active && l.pri===3).map(l=>l.desc).join(', ') || 'none'}.`;
+  } else {
+    box.className = 'conflict-box';
+  }
+}
+
+// ── Generate schedule ─────────────────────
+function generateSchedule() {
+  const deviceName = document.getElementById('deviceName').value;
+  const maxA       = getDeviceAmps();
+  const safeA      = getSafeAmps();
+  const usedA      = getActiveAmps();
+  const volts      = getDeviceVolts();
+  const feeder     = parseFloat(document.getElementById('feederAmps').value) || 60;
+  const activeLoads= loads.filter(l => l.active);
+  const pct        = safeA > 0 ? (usedA / safeA) * 100 : 0;
+  const remA       = Math.max(0, safeA - usedA);
+  const ok         = usedA <= safeA;
+
+  // Result tiles
+  document.getElementById('res_device').textContent    = deviceName;
+  document.getElementById('res_capacity').textContent  = fmt(maxA);
+  document.getElementById('res_activeAmps').textContent= fmt(usedA);
+  document.getElementById('res_headroom').textContent  = fmt(remA);
+
+  const sTile = document.getElementById('res_statusTile');
+  const sEl   = document.getElementById('res_status');
+  const sLbl  = document.getElementById('res_statusLabel');
+  sTile.className = ok ? 'r-tile r-primary' : 'r-tile r-danger';
+  sEl.textContent = ok ? '✓ OK' : '✗ OVER';
+  sLbl.textContent = ok ? `${Math.round(pct)}% of safe capacity` : 'Exceeds limit!';
+
+  const hTile = document.getElementById('res_headroomTile');
+  hTile.className = remA >= 5 ? 'r-tile r-primary' : remA >= 0 ? 'r-tile r-warn' : 'r-tile r-danger';
+
+  // Wire size for feeder
+  let wireRec = '#6 AWG Cu or #4 AWG Al';
+  if (feeder <= 30) wireRec = '#10 AWG Cu or #8 AWG Al';
+  else if (feeder <= 40) wireRec = '#8 AWG Cu or #6 AWG Al';
+  else if (feeder <= 60) wireRec = '#6 AWG Cu or #4 AWG Al';
+  else if (feeder <= 100) wireRec = '#4 AWG Cu or #2 AWG Al';
+
+  const recFeeder = Math.ceil(maxA * 1.25 / 5) * 5;
+
+  document.getElementById('feederRec').innerHTML = `
+    <strong>Feeder Recommendation (NEC 215.2):</strong> &nbsp;
+    ${maxA}A × 125% = ${fmt(maxA*1.25,1)}A → use <strong>${recFeeder}A breaker</strong> with <strong>${wireRec}</strong> · 
+    ${volts}V single-phase · Conduit: EMT or PVC Sch 40 ·
+    Subpanel minimum rating: <strong>${recFeeder}A</strong>
+  `;
+
+  // Schedule table
+  const stbody = document.getElementById('scheduleTableBody');
+  stbody.innerHTML = '';
+  let runningAmps = 0;
+
+  activeLoads.sort((a,b) => a.pri - b.pri).forEach((load, i) => {
+    const amps = wattsToAmps(load.watts);
+    runningAmps += amps;
+    const pctOfSafe = safeA > 0 ? (amps / safeA * 100) : 0;
+    const cumPct    = safeA > 0 ? (runningAmps / safeA * 100) : 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--text-muted)">${i+1}</td>
+      <td style="font-weight:600;color:var(--text)">${load.desc}</td>
+      <td><span class="cat-badge cat-${load.cat}">${catLabel(load.cat)}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace">${load.watts.toLocaleString()} W</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--green)">${fmt(amps,2)} A</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;background:var(--border);border-radius:2px;height:6px;overflow:hidden;min-width:60px;">
+            <div style="width:${Math.min(100,pctOfSafe)}%;height:100%;background:${cumPct>100?'var(--red)':cumPct>80?'var(--amber)':'var(--green-mid)'};border-radius:2px;"></div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${fmt(pctOfSafe,1)}%</span>
+        </div>
+      </td>
+      <td><span class="priority-badge pri-${load.pri}">${priLabel(load.pri)}</span></td>
+    `;
+    stbody.appendChild(tr);
+  });
+
+  // Total row
+  const totalTr = document.createElement('tr');
+  totalTr.style.borderTop = '2px solid var(--border-dark)';
+  totalTr.style.background = ok ? 'var(--green-light)' : 'var(--red-bg)';
+  totalTr.innerHTML = `
+    <td colspan="3" style="font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;color:${ok?'var(--green)':'var(--red)'};">TOTAL ACTIVE LOAD</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-weight:700;">${loads.filter(l=>l.active).reduce((s,l)=>s+l.watts,0).toLocaleString()} W</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${ok?'var(--green)':'var(--red)'};">${fmt(usedA,2)} A</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${ok?'var(--green)':'var(--red)'};">${fmt(pct,1)}% of safe cap</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${ok?'var(--green)':'var(--red)'};">${ok?'✓ OK':'✗ OVER'}</td>
+  `;
+  stbody.appendChild(totalTr);
+
+  // Summary
+  const clientEl = document.getElementById('clientName') ? document.getElementById('clientName').value.trim() : '';
+  const disabledLoads = loads.filter(l => !l.active);
+
+  document.getElementById('summaryText').innerHTML = `
+    <strong>Device:</strong> ${deviceName} · ${maxA}A @ ${volts}V (${fmt(maxA*volts/1000,2)} kW backup output)<br>
+    <strong>Safe operating limit (80% per NEC 705.12):</strong> ${fmt(safeA,1)} A<br>
+    <strong>Active critical loads:</strong> ${activeLoads.length} loads · ${fmt(usedA,2)} A total · ${fmt(usedA*volts/1000,2)} kW<br>
+    <strong>Remaining headroom:</strong> ${fmt(remA,2)} A (${fmt(Math.max(0,100-pct),1)}% available)<br>
+    <strong>Recommended feeder:</strong> ${recFeeder}A breaker · ${wireRec} · ${volts}V<br>
+    <strong>Status:</strong> ${ok ? `✓ COMPLIANT — active loads are within the ${fmt(getContPct()*100,0)}% continuous limit` : `✗ OVERLOADED — reduce active loads by ${fmt(usedA-safeA,2)}A before energizing`}<br>
+    ${disabledLoads.length > 0 ? `<strong>Loads NOT on critical panel (${disabledLoads.length}):</strong> ${disabledLoads.map(l=>l.desc).join(', ')}<br>` : ''}
+    <br><em style="font-size:11px;color:var(--text-muted)">Note: Motor loads (pumps, compressors) have inrush currents of 3–6× running amps. If multiple motor loads start simultaneously, momentary draw may exceed the inverter output. Stagger motor starts where possible. Verify with dcbel/Enphase engineer before finalizing the critical load schedule.</em>
+  `;
+
+  document.getElementById('resultsSection').classList.add('visible');
+  document.getElementById('resultsSection').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── Print / Save ──────────────────────────
+function printSchedule() {
+  const device = document.getElementById('deviceName').value.trim();
+  const el = document.getElementById('printTitle');
+  const dl = document.getElementById('printDate');
+  if (el) el.textContent = device + ' — Critical Load Schedule';
+  if (dl) dl.textContent = 'Generated: ' + new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  window.print();
+}
+
+function copySchedule() {
+  const t = document.getElementById('summaryText').innerText;
+  navigator.clipboard.writeText(t).then(() => {
+    const btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(b => { b.textContent = 'Copied!'; });
+    setTimeout(() => btns.forEach(b => { b.textContent = 'Copy Summary'; }), 1500);
+  });
+}
+
+function saveSchedule() {
+  const device  = document.getElementById('deviceName').value.trim() || 'Critical-Load';
+  const safeName= device.replace(/[^a-zA-Z0-9_\- ]/g,'').replace(/\s+/g,'-');
+  const date    = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  const summaryHTML = document.getElementById('summaryText').innerHTML;
+  const schedHTML   = document.getElementById('scheduleTableBody').innerHTML;
+  const feederHTML  = document.getElementById('feederRec').innerHTML;
+  const resCapacity = document.getElementById('res_capacity').textContent;
+  const resActive   = document.getElementById('res_activeAmps').textContent;
+  const resHeadroom = document.getElementById('res_headroom').textContent;
+  const resStatus   = document.getElementById('res_status').textContent;
+
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Critical Load Schedule — ${device}</title>
+<style>
+body{font-family:Arial,sans-serif;background:#fff;color:#111;max-width:900px;margin:0 auto;padding:36px 28px;}
+.hdr{background:#1a5c2a;color:#fff;padding:18px 22px;border-radius:4px;margin-bottom:20px;}
+.hdr h1{font-size:22px;margin:0;letter-spacing:1px;}
+.hdr .sub{font-size:11px;opacity:0.7;margin-top:4px;font-family:monospace;}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.tile{background:#f4f9f4;border:1px solid #b8ccb8;border-radius:4px;padding:12px;text-align:center;}
+.tval{font-size:26px;font-weight:700;color:#1a5c2a;}
+.tunit{font-size:10px;color:#888;font-family:monospace;}
+.tlbl{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:1px;font-family:monospace;margin-top:4px;}
+.sec{font-size:10px;letter-spacing:2px;color:#1a5c2a;text-transform:uppercase;font-family:monospace;margin:18px 0 8px;border-left:3px solid #1a5c2a;padding-left:8px;}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:18px;}
+th{padding:8px 10px;background:#f4f9f4;border-bottom:2px solid #b8ccb8;text-align:left;font-family:monospace;font-size:9px;letter-spacing:1px;color:#6b8070;text-transform:uppercase;}
+td{padding:8px 10px;border-bottom:1px solid #e8ede8;color:#333;}
+.feeder{background:#e8f5e9;border:1px solid #b8ccb8;border-radius:3px;padding:10px 14px;font-size:12px;color:#1a5c2a;font-family:monospace;margin-bottom:18px;}
+.summary{background:#f4f9f4;border:1px solid #b8ccb8;border-radius:4px;padding:14px 18px;font-size:13px;line-height:1.8;color:#333;}
+.summary strong{color:#000;}
+.warn{background:#fffde7;border:2px solid #f9a825;border-radius:4px;padding:10px 14px;font-size:11px;color:#5d4037;margin-bottom:16px;}
+footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#aaa;text-align:center;font-family:monospace;}
+</style></head>
+<body>
+<div class="hdr">
+<div style="font-size:10px;letter-spacing:2px;opacity:0.7;font-family:monospace;margin-bottom:6px;">CENTURY ROOF &amp; SOLAR · CRITICAL LOAD SCHEDULE</div>
+<h1>${device} — Critical Load Panel</h1>
+<div class="sub">Generated: ${date}</div>
+</div>
+<div class="warn">⚠ <strong>INTERNAL PRELIMINARY DOCUMENT</strong> — Not for permit submittal or customer deliverables without licensed electrician review and sign-off.</div>
+<div class="tiles">
+<div class="tile"><div class="tval">${resCapacity}</div><div class="tunit">A</div><div class="tlbl">Rated Output</div></div>
+<div class="tile"><div class="tval">${resActive}</div><div class="tunit">A active</div><div class="tlbl">Active Loads</div></div>
+<div class="tile"><div class="tval">${resHeadroom}</div><div class="tunit">A left</div><div class="tlbl">Headroom</div></div>
+<div class="tile"><div class="tval" style="font-size:18px">${resStatus}</div><div class="tlbl">Status</div></div>
+</div>
+<div class="sec">Feeder Recommendation</div>
+<div class="feeder">${feederHTML}</div>
+<div class="sec">Critical Load Schedule</div>
+<table><thead><tr><th>#</th><th>Load</th><th>Category</th><th>Watts</th><th>Amps</th><th>% Safe Cap</th><th>Priority</th></tr></thead>
+<tbody>${schedHTML.replace(/style="[^"]*var\([^"]*\)[^"]*"/g, '').replace(/<div[^>]*>.*?<\/div>/gs, '')}</tbody>
+</table>
+<div class="sec">Summary</div>
+<div class="summary">${summaryHTML}</div>
+<footer>Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA · Critical Load Panel Calculator ${APP_VERSION} (${APP_DATE}) · Not a stamped calculation</footer>
+</body></html>`;
+
+  const blob = new Blob([html], { type:'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `Critical-Load-Schedule-${safeName}-${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Reset ─────────────────────────────────
+function resetAll() {
+  if (!confirm('Reset all loads and settings?')) return;
+  loads = [];
+  loadIdCounter = 0;
+  document.getElementById('loadTableBody').innerHTML = '';
+  document.getElementById('devicePreset').value = 'dcbel_ara';
+  applyDevicePreset();
+  document.getElementById('resultsSection').classList.remove('visible');
+  document.getElementById('conflictBox').className = 'conflict-box';
+  initDefaultLoads();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ── Init ──────────────────────────────────
+applyDevicePreset();
+initDefaultLoads();
+updateMeter();
+</script>
+</body>
+</html>
