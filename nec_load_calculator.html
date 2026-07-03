@@ -2462,7 +2462,7 @@ select option { background: var(--surface); }
       </div>
       <div>
         <h1>Century Roof &amp; Solar</h1>
-        <p>NEC Load Calculator <span class="badge-blue">v1.2 · 2023 NEC</span></p>
+        <p>NEC Load Calculator <span class="badge-blue">v1.3.0 · 2023 NEC</span></p>
       </div>
     </div>
   </div>
@@ -3507,8 +3507,8 @@ calc82(); calc83a(); calc83b(); calc42(); calcEvse();
 
 
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.0.0';
-const APP_DATE    = '2026-04-21';
+const APP_VERSION = 'v1.3.0';
+const APP_DATE    = '2026-07-02';
 // ─────────────────────────────────────────
 
 // ── Device Presets ────────────────────────
@@ -3762,21 +3762,24 @@ function addLoad(desc, watts, cat, pri, notes, active=true) {
 function renderLoadRow(load) {
   const tbody  = document.getElementById('loadTableBody');
   const volts  = getDeviceVolts();
-  const amps   = clWattsToAmps(load.watts);
+  const amps   = load.watts / volts;
   const tr     = document.createElement('tr');
   tr.id        = 'row_' + load.id;
   tr.className = load.active ? 'row-active' : '';
+
+  // Build calc button separately to avoid nested template literal issues
+  const isLighting = (load.cat === 'comfort' &&
+    (load.desc.toLowerCase().includes('light') || load.desc.toLowerCase().includes('lamp')));
+  const calcBtn = isLighting
+    ? '<button class="fixture-calc-btn" data-loadid="' + load.id + '" title="Open Fixture Calculator" style="display:inline-block;margin-left:6px;background:#e8f5e9;border:1px solid #b8ccb8;border-radius:3px;padding:2px 8px;font-size:11px;color:#1a5c2a;cursor:pointer;vertical-align:middle;">💡 calc</button>'
+    : '';
 
   tr.innerHTML = `
     <td>
       <button class="toggle-track ${load.active ? 'on' : ''}" id="tog_${load.id}"
         onclick="toggleLoad(${load.id})" title="${load.active ? 'Enabled' : 'Disabled'}"></button>
     </td>
-    <td style="font-weight:500;color:var(--text);min-width:160px">
-      ${load.desc}
-      ${(load.cat === 'comfort' && (load.desc.toLowerCase().includes('light') || load.desc.toLowerCase().includes('lamp'))) ?
-        '<button class="fixture-calc-btn" data-loadid="' + load.id + '" title="Open Fixture Calculator" style="margin-left:6px;background:#e8f5e9;border:1px solid #b8ccb8;border-radius:3px;padding:2px 8px;font-size:11px;color:#1a5c2a;cursor:pointer;vertical-align:middle;">💡 calc</button>' : ''}
-    </td>
+    <td style="font-weight:500;color:var(--text);min-width:160px">${load.desc}${calcBtn}</td>
     <td><span class="cat-badge cat-${load.cat}">${catLabel(load.cat)}</span></td>
     <td>
       <div style="display:flex;align-items:center;gap:4px;">
@@ -3788,7 +3791,7 @@ function renderLoadRow(load) {
           onblur="this.style.borderColor='var(--green-mid)';this.style.boxShadow='none'"
           title="✏ Click to edit nameplate watts">
         <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">W</span>
-        <span style="font-size:10px;color:var(--green-mid);margin-left:2px;" title="Editable">✏</span>
+        <span style="font-size:10px;color:var(--green-mid);margin-left:2px;">✏</span>
       </div>
     </td>
     <td class="amps-cell ${load.active ? 'active' : ''}" id="ampcell_${load.id}">${fmtCL(amps,2)} A</td>
