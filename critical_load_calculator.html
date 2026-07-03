@@ -835,16 +835,16 @@ select option { background: var(--surface); }
 /* ── Lighting Fixture Calculator Modal ───────────────────── */
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 1000;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
 }
 
-.modal-overlay.hidden { display: none; }
+.modal-overlay.hidden { display: none !important; }
 
 .modal-box {
   background: var(--surface);
@@ -2090,10 +2090,12 @@ const FIXTURE_PRESETS = [
 
 function openFixtureModal(loadId) {
   fixtureTargetLoadId = loadId;
-  // Show modal FIRST so all elements exist in DOM before we try to update them
+  console.log('openFixtureModal called with loadId:', loadId);
   const modal = document.getElementById('fixtureModal');
-  if (!modal) return;
+  console.log('modal element:', modal);
+  if (!modal) { console.error('fixtureModal element not found!'); return; }
   modal.classList.remove('hidden');
+  console.log('modal classes after remove:', modal.className);
   document.getElementById('fixtureRows').innerHTML = '';
   fixtureRowUid = 0;
   // Pre-populate with one row
