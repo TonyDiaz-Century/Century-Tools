@@ -828,6 +828,209 @@ footer a:hover { color: #fff; }
 }
 
 select option { background: var(--surface); }
+
+/* ── Lighting Fixture Calculator Modal ───────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border-dark);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 540px;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: var(--green);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.modal-close:hover { opacity: 1; }
+
+.modal-body { padding: 18px; }
+
+.modal-info {
+  background: var(--green-light);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--green);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.fixture-rows { margin-bottom: 12px; }
+
+.fixture-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 80px 30px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.fixture-row label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+  display: block;
+}
+
+.fixture-row input, .fixture-row select {
+  width: 100%;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+
+.fixture-row input:focus, .fixture-row select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(46,125,50,0.10);
+}
+
+.fixture-row .row-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+  text-align: right;
+  padding-top: 18px;
+}
+
+.fixture-del {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 3px;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 16px;
+  transition: all 0.1s;
+  flex-shrink: 0;
+}
+.fixture-del:hover { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+.modal-totals {
+  background: var(--surface2);
+  border: 1px solid var(--border-dark);
+  border-radius: 4px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-total-item {
+  text-align: center;
+}
+
+.modal-total-val {
+  font-family: 'Oswald', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+  display: block;
+}
+
+.modal-total-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  display: block;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-btn-add {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border-dark);
+  color: var(--text-mid);
+  font-family: 'Oswald', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.modal-btn-add:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+.modal-btn-apply {
+  padding: 8px 20px;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-family: 'Oswald', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.modal-btn-apply:hover { background: var(--green-mid); }
+
 </style>
 </head>
 <body>
@@ -844,7 +1047,7 @@ select option { background: var(--surface); }
       <span class="tool-sub">Bidirectional Inverter · Backup Load Sizing</span>
     </div>
     <div class="header-ver">
-      <div class="ver-pill">v1.2.0 · 2026-07-02</div>
+      <div class="ver-pill">v1.3.0 · 2026-07-02</div>
     </div>
   </div>
 </header>
@@ -1028,6 +1231,7 @@ select option { background: var(--surface); }
         <button class="preset-btn" onclick="addPreset('tv')">📺 TV / Entertainment</button>
         <button class="preset-btn" onclick="addPreset('evse_l1')">⚡ EVSE Level 1 (120V)</button>
         <button class="preset-btn" onclick="addPreset('security')">🔒 Security System</button>
+        <button class="preset-btn" onclick="addLightingAndCalc()" style="background:var(--green-light);border-color:var(--green);color:var(--green);font-weight:600;">💡 Lighting + Fixture Calc</button>
       </div>
 
       <!-- Load table -->
@@ -1190,12 +1394,12 @@ select option { background: var(--surface); }
   Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA ·
   <a href="tel:5107809498">510-780-9498</a> ·
   <a href="mailto:tonyd@centuryrooftile.com">tonyd@centuryrooftile.com</a> ·
-  Critical Load Panel Calculator v1.2.0
+  Critical Load Panel Calculator v1.3.0
 </footer>
 
 <script>
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.2.0';
+const APP_VERSION = 'v1.3.0';
 const APP_DATE    = '2026-07-02';
 // ─────────────────────────────────────────
 
@@ -1464,7 +1668,11 @@ function renderLoadRow(load) {
       <button class="toggle-track ${load.active ? 'on' : ''}" id="tog_${load.id}"
         onclick="toggleLoad(${load.id})" title="${load.active ? 'Enabled' : 'Disabled'}"></button>
     </td>
-    <td style="font-weight:500;color:var(--text);min-width:160px">${load.desc}</td>
+    <td style="font-weight:500;color:var(--text);min-width:160px">
+      ${load.desc}
+      ${load.cat === 'comfort' && (load.desc.toLowerCase().includes('light') || load.desc.toLowerCase().includes('lamp')) ?
+        `<button onclick="openFixtureModal(${load.id})" title="Open Fixture Calculator" style="margin-left:6px;background:var(--green-light);border:1px solid var(--border-dark);border-radius:3px;padding:1px 6px;font-size:11px;color:var(--green);cursor:pointer;">💡 calc</button>` : ''}
+    </td>
     <td><span class="cat-badge cat-${load.cat}">${catLabel(load.cat)}</span></td>
     <td>
       <div style="display:flex;align-items:center;gap:4px;">
@@ -1754,6 +1962,61 @@ footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px
 <div class="sec">Summary</div>
 <div class="summary">${summaryHTML}</div>
 <footer>Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA · Critical Load Panel Calculator ${APP_VERSION} (${APP_DATE}) · Not a stamped calculation</footer>
+
+<!-- ── Lighting Fixture Calculator Modal ── -->
+<div class="modal-overlay hidden" id="fixtureModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>💡 Lighting Circuit Calculator</h3>
+      <button class="modal-close" onclick="closeFixtureModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-info">
+        Enter each fixture type on this circuit. The tool calculates actual running watts — much more accurate than 3 W/sq ft (which is a service sizing method, not a circuit load method).<br>
+        <strong>Tip:</strong> LED downlights: 6–10W · LED strips: 10–15W/meter · Fluorescent 4ft: 32W · Incandescent: 60W
+      </div>
+
+      <!-- Column headers -->
+      <div style="display:grid;grid-template-columns:1fr 90px 80px 30px;gap:8px;margin-bottom:4px;padding:0 0 4px;border-bottom:1px solid var(--border);">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Fixture / Load Description</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Qty</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">W each</span>
+        <span></span>
+      </div>
+
+      <div class="fixture-rows" id="fixtureRows"></div>
+
+      <button class="modal-btn-add" onclick="addFixtureRow()" style="margin-bottom:14px;">+ Add Fixture Type</button>
+
+      <!-- Totals -->
+      <div class="modal-totals">
+        <div class="modal-total-item">
+          <span class="modal-total-val" id="fixTotal">0</span>
+          <span class="modal-total-label">Total Watts</span>
+        </div>
+        <div class="modal-total-item">
+          <span class="modal-total-val" id="fixAmps" style="color:var(--blue)">0.00</span>
+          <span class="modal-total-label">Amps @ 240V</span>
+        </div>
+        <div class="modal-total-item">
+          <span class="modal-total-val" id="fixCount" style="color:var(--text-mid)">0</span>
+          <span class="modal-total-label">Total Fixtures</span>
+        </div>
+        <div class="modal-total-item" style="text-align:left;max-width:160px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.6;" id="fixCapNote"></span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn-add" onclick="closeFixtureModal()">Cancel</button>
+        <button class="modal-btn-apply" onclick="applyFixtureCalc()">✓ Apply to Load</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body></html>`;
 
   const blob = new Blob([html], { type:'text/html' });
@@ -1783,6 +2046,189 @@ function resetAll() {
 applyDevicePreset();
 initDefaultLoads();
 updateMeter();
+
+// ── Lighting Fixture Calculator ───────────────────────────
+let fixtureTargetLoadId = null;
+let fixtureRowUid = 0;
+
+const FIXTURE_PRESETS = [
+  { label:'LED Downlight (8W)',       watts:8  },
+  { label:'LED Downlight (10W)',      watts:10 },
+  { label:'LED Downlight (6W)',       watts:6  },
+  { label:'LED Bulb A19 (9W)',        watts:9  },
+  { label:'LED Candelabra (4W)',      watts:4  },
+  { label:'LED Strip /meter (12W)',   watts:12 },
+  { label:'LED T8 Tube 4ft (18W)',    watts:18 },
+  { label:'Fluorescent 4ft (32W)',    watts:32 },
+  { label:'Fluorescent 2ft (17W)',    watts:17 },
+  { label:'Incandescent 60W',         watts:60 },
+  { label:'Incandescent 100W',        watts:100},
+  { label:'Halogen PAR38 (50W)',      watts:50 },
+  { label:'CFL 13W',                  watts:13 },
+  { label:'Exterior LED (15W)',       watts:15 },
+  { label:'Under-cabinet LED (10W)',  watts:10 },
+  { label:'Custom (enter watts)',     watts:''  },
+];
+
+function openFixtureModal(loadId) {
+  fixtureTargetLoadId = loadId;
+  // Show modal FIRST so all elements exist in DOM before we try to update them
+  const modal = document.getElementById('fixtureModal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  document.getElementById('fixtureRows').innerHTML = '';
+  fixtureRowUid = 0;
+  // Pre-populate with one row
+  addFixtureRow('LED Downlight (8W)', 8, 6);
+  updateFixtureTotals();
+}
+
+function closeFixtureModal() {
+  document.getElementById('fixtureModal').classList.add('hidden');
+  fixtureTargetLoadId = null;
+}
+
+function addFixtureRow(presetLabel, presetWatts, presetQty) {
+  const id   = ++fixtureRowUid;
+  const wrap = document.getElementById('fixtureRows');
+  const div  = document.createElement('div');
+  div.className = 'fixture-row';
+  div.id = 'frow_' + id;
+
+  // Build preset select options
+  const opts = FIXTURE_PRESETS.map(p =>
+    `<option value="${p.watts}" ${presetLabel && p.label === presetLabel ? 'selected' : ''}>${p.label}</option>`
+  ).join('');
+
+  div.innerHTML = `
+    <div>
+      <label>Fixture Type</label>
+      <select onchange="onFixturePresetChange(${id}, this)">
+        ${opts}
+      </select>
+    </div>
+    <div>
+      <label>Quantity</label>
+      <input type="number" id="fqty_${id}" value="${presetQty || 1}" min="1" max="100" step="1" oninput="updateFixtureTotals()">
+    </div>
+    <div>
+      <label>Watts each</label>
+      <input type="number" id="fwatts_${id}" value="${presetWatts || 8}" min="0.5" max="2000" step="0.5" oninput="updateFixtureTotals()">
+    </div>
+    <button class="fixture-del" onclick="deleteFixtureRow(${id})" title="Remove">✕</button>
+  `;
+  wrap.appendChild(div);
+  updateFixtureTotals();
+}
+
+function onFixturePresetChange(id, sel) {
+  const wattsInput = document.getElementById('fwatts_' + id);
+  if (sel.value !== '') {
+    wattsInput.value = sel.value;
+  }
+  updateFixtureTotals();
+}
+
+function deleteFixtureRow(id) {
+  const row = document.getElementById('frow_' + id);
+  if (row) row.remove();
+  updateFixtureTotals();
+}
+
+function updateFixtureTotals() {
+  const fixtureRowsEl = document.getElementById('fixtureRows');
+  if (!fixtureRowsEl) return;
+  const rows = fixtureRowsEl.querySelectorAll('.fixture-row');
+  let totalWatts = 0;
+  let totalFixtures = 0;
+
+  rows.forEach(row => {
+    const id = row.id.replace('frow_', '');
+    const qty   = parseFloat(document.getElementById('fqty_' + id)?.value) || 0;
+    const watts = parseFloat(document.getElementById('fwatts_' + id)?.value) || 0;
+    totalWatts    += qty * watts;
+    totalFixtures += qty;
+  });
+
+  const volts = typeof getDeviceVolts === 'function' ? getDeviceVolts() : 240;
+  const amps  = totalWatts / volts;
+
+  const elTotal = document.getElementById('fixTotal');
+  const elAmps  = document.getElementById('fixAmps');
+  const elCount = document.getElementById('fixCount');
+  const capNote = document.getElementById('fixCapNote');
+  if (!elTotal || !elAmps || !elCount || !capNote) return;
+
+  elTotal.textContent = Math.round(totalWatts);
+  elAmps.textContent  = amps.toFixed(2);
+  elCount.textContent = totalFixtures;
+
+  // Circuit capacity note
+  const cap15 = 15 * 120;
+  const cap20 = 20 * 120;
+  const pct15 = (totalWatts / cap15 * 100).toFixed(0);
+  if (totalWatts === 0) {
+    capNote.textContent = '';
+  } else if (totalWatts <= cap15) {
+    capNote.textContent = `${pct15}% of a 15A/120V circuit capacity (1,800W max). Fits on one 15A breaker.`;
+    capNote.style.color = 'var(--green)';
+  } else if (totalWatts <= cap20) {
+    capNote.textContent = `Exceeds 15A circuit — fits on a 20A/120V circuit (2,400W max). Verify breaker size.`;
+    capNote.style.color = 'var(--amber)';
+  } else {
+    capNote.textContent = `Exceeds 20A circuit capacity. Split across multiple circuits.`;
+    capNote.style.color = 'var(--red)';
+  }
+}
+
+function applyFixtureCalc() {
+  const totalWatts = parseFloat(document.getElementById('fixTotal').textContent) || 0;
+  if (totalWatts === 0) { alert('Please add at least one fixture.'); return; }
+
+  if (fixtureTargetLoadId !== null) {
+    // Update the load in the loads array
+    updateLoadWatts(fixtureTargetLoadId, totalWatts);
+    // Update the watts input field in the table
+    const wattInput = document.getElementById('wattcell_' + fixtureTargetLoadId);
+    if (wattInput) wattInput.value = totalWatts;
+    // Update notes with fixture summary
+    const rows = document.getElementById('fixtureRows').querySelectorAll('.fixture-row');
+    const parts = [];
+    rows.forEach(row => {
+      const id    = row.id.replace('frow_', '');
+      const qty   = document.getElementById('fqty_' + id)?.value || 0;
+      const watts = document.getElementById('fwatts_' + id)?.value || 0;
+      const sel   = row.querySelector('select');
+      const label = sel ? sel.options[sel.selectedIndex].text.split('(')[0].trim() : 'Fixture';
+      if (qty > 0 && watts > 0) parts.push(`${qty}× ${label} ${watts}W`);
+    });
+    const load = loads.find(l => l.id === fixtureTargetLoadId);
+    if (load) load.notes = `Fixture calc: ${parts.join(' · ')} = ${Math.round(totalWatts)}W total`;
+    // Refresh the row notes cell
+    const row = document.getElementById('row_' + fixtureTargetLoadId);
+    if (row) {
+      const notesCell = row.cells[6];
+      if (notesCell) notesCell.textContent = load ? load.notes : '';
+    }
+  }
+  closeFixtureModal();
+}
+
+function addLightingAndCalc() {
+  // Add a lighting circuit load then immediately open the fixture calculator
+  const id = addLoad('Lighting Circuit', 480, 'comfort', 2, 'Use 💡 calc button to enter actual fixture watts', true);
+  // Small delay to let the row render
+  setTimeout(() => openFixtureModal(id), 50);
+}
+
+// Close modal on overlay click
+const _fixtureModalEl = document.getElementById('fixtureModal');
+if (_fixtureModalEl) {
+  _fixtureModalEl.addEventListener('click', function(e) {
+    if (e.target === this) closeFixtureModal();
+  });
+}
+
 </script>
 </body>
 </html>
