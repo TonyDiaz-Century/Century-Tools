@@ -3774,8 +3774,8 @@ function renderLoadRow(load) {
     </td>
     <td style="font-weight:500;color:var(--text);min-width:160px">
       ${load.desc}
-      ${load.cat === 'comfort' && (load.desc.toLowerCase().includes('light') || load.desc.toLowerCase().includes('lamp')) ?
-        `<button onclick="openFixtureModal(${load.id})" title="Open Fixture Calculator" style="margin-left:6px;background:var(--green-light);border:1px solid var(--border-dark);border-radius:3px;padding:1px 6px;font-size:11px;color:var(--green);cursor:pointer;">💡 calc</button>` : ''}
+      ${(load.cat === 'comfort' && (load.desc.toLowerCase().includes('light') || load.desc.toLowerCase().includes('lamp'))) ?
+        '<button class="fixture-calc-btn" data-loadid="' + load.id + '" title="Open Fixture Calculator" style="margin-left:6px;background:#e8f5e9;border:1px solid #b8ccb8;border-radius:3px;padding:2px 8px;font-size:11px;color:#1a5c2a;cursor:pointer;vertical-align:middle;">💡 calc</button>' : ''}
     </td>
     <td><span class="cat-badge cat-${load.cat}">${catLabel(load.cat)}</span></td>
     <td>
@@ -4147,6 +4147,15 @@ function dcbelReset() {
 applyDevicePreset();
 initDefaultLoads();
 updateMeter();
+
+// Event delegation for 💡 calc buttons (avoids inline onclick issues)
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.fixture-calc-btn');
+  if (btn) {
+    const loadId = parseInt(btn.getAttribute('data-loadid'));
+    if (!isNaN(loadId)) openFixtureModal(loadId);
+  }
+});
 
 
 // ── Lighting Fixture Calculator ───────────────────────────
