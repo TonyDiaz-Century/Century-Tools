@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Century Roof & Solar — NEC Load Calculator</title>
 <style>
@@ -2462,7 +2465,7 @@ select option { background: var(--surface); }
       </div>
       <div>
         <h1>Century Roof &amp; Solar</h1>
-        <p>NEC Load Calculator <span class="badge-blue">v1.3.0 · 2023 NEC</span></p>
+        <p>NEC Load Calculator <span class="badge-blue">v1.4.0 · 2023 NEC</span></p>
       </div>
     </div>
   </div>
@@ -3507,8 +3510,8 @@ calc82(); calc83a(); calc83b(); calc42(); calcEvse();
 
 
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.3.0';
-const APP_DATE    = '2026-07-02';
+const APP_VERSION = 'v1.4.0';
+const APP_DATE    = '2026-07-03';
 // ─────────────────────────────────────────
 
 // ── Device Presets ────────────────────────
@@ -4023,7 +4026,10 @@ function dcbelSave() {
   const resStatus   = document.getElementById('res_status').textContent;
 
   const html = `<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Critical Load Schedule — ${device}</title>
+<html><head><meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0"><title>Critical Load Schedule — ${device}</title>
 <style>
 body{font-family:Arial,sans-serif;background:#fff;color:#111;max-width:900px;margin:0 auto;padding:36px 28px;}
 .hdr{background:#1a5c2a;color:#fff;padding:18px 22px;border-radius:4px;margin-bottom:20px;}
