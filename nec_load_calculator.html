@@ -2465,7 +2465,7 @@ select option { background: var(--surface); }
       </div>
       <div>
         <h1>Century Roof &amp; Solar</h1>
-        <p>NEC Load Calculator <span class="badge-blue">v1.4.0 · 2023 NEC</span></p>
+        <p>NEC Load Calculator <span class="badge-blue">v1.5.0 · 2023 NEC</span></p>
       </div>
     </div>
   </div>
@@ -3510,7 +3510,7 @@ calc82(); calc83a(); calc83b(); calc42(); calcEvse();
 
 
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 const APP_DATE    = '2026-07-03';
 // ─────────────────────────────────────────
 
@@ -4189,11 +4189,12 @@ function openFixtureModal(loadId) {
     </div>`;
   modal.addEventListener('click', function(e) { if (e.target === this) closeFixtureModal(); });
   document.body.appendChild(modal);
+  // Now that modal is in DOM, populate rows and update totals
   document.getElementById('fixtureRows').innerHTML = '';
   fixtureRowUid = 0;
-  // Pre-populate with one row
   addFixtureRow('LED Downlight (8W)', 8, 6);
   updateFixtureTotals();
+  // rows populated after modal appended to DOM below
 }
 
 function closeFixtureModal() {

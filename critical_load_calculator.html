@@ -1050,7 +1050,7 @@ select option { background: var(--surface); }
       <span class="tool-sub">Bidirectional Inverter · Backup Load Sizing</span>
     </div>
     <div class="header-ver">
-      <div class="ver-pill">v1.4.0 · 2026-07-02</div>
+      <div class="ver-pill">v1.5.0 · 2026-07-03</div>
     </div>
   </div>
 </header>
@@ -1397,12 +1397,12 @@ select option { background: var(--surface); }
   Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA ·
   <a href="tel:5107809498">510-780-9498</a> ·
   <a href="mailto:tonyd@centuryrooftile.com">tonyd@centuryrooftile.com</a> ·
-  Critical Load Panel Calculator v1.4.0
+  Critical Load Panel Calculator v1.5.0
 </footer>
 
 <script>
 // ── VERSION ──────────────────────────────
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 const APP_DATE    = '2026-07-03';
 // ─────────────────────────────────────────
 
@@ -2087,11 +2087,12 @@ function openFixtureModal(loadId) {
     </div>`;
   modal.addEventListener('click', function(e) { if (e.target === this) closeFixtureModal(); });
   document.body.appendChild(modal);
+  // Now that modal is in DOM, populate rows and update totals
   document.getElementById('fixtureRows').innerHTML = '';
   fixtureRowUid = 0;
-  // Pre-populate with one row
   addFixtureRow('LED Downlight (8W)', 8, 6);
   updateFixtureTotals();
+  // rows populated after modal appended to DOM below
 }
 
 function closeFixtureModal() {
