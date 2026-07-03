@@ -1972,59 +1972,7 @@ footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-size:10px
 <div class="summary">${summaryHTML}</div>
 <footer>Century Roof &amp; Solar · License #721502 · C10 &amp; C39 · Hayward, CA · Critical Load Panel Calculator ${APP_VERSION} (${APP_DATE}) · Not a stamped calculation</footer>
 
-<!-- ── Lighting Fixture Calculator Modal ── -->
-<div class="modal-overlay hidden" id="fixtureModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h3>💡 Lighting Circuit Calculator</h3>
-      <button class="modal-close" onclick="closeFixtureModal()">✕</button>
-    </div>
-    <div class="modal-body">
-
-      <div class="modal-info">
-        Enter each fixture type on this circuit. The tool calculates actual running watts — much more accurate than 3 W/sq ft (which is a service sizing method, not a circuit load method).<br>
-        <strong>Tip:</strong> LED downlights: 6–10W · LED strips: 10–15W/meter · Fluorescent 4ft: 32W · Incandescent: 60W
-      </div>
-
-      <!-- Column headers -->
-      <div style="display:grid;grid-template-columns:1fr 90px 80px 30px;gap:8px;margin-bottom:4px;padding:0 0 4px;border-bottom:1px solid var(--border);">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Fixture / Load Description</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">Qty</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">W each</span>
-        <span></span>
-      </div>
-
-      <div class="fixture-rows" id="fixtureRows"></div>
-
-      <button class="modal-btn-add" onclick="addFixtureRow()" style="margin-bottom:14px;">+ Add Fixture Type</button>
-
-      <!-- Totals -->
-      <div class="modal-totals">
-        <div class="modal-total-item">
-          <span class="modal-total-val" id="fixTotal">0</span>
-          <span class="modal-total-label">Total Watts</span>
-        </div>
-        <div class="modal-total-item">
-          <span class="modal-total-val" id="fixAmps" style="color:var(--blue)">0.00</span>
-          <span class="modal-total-label">Amps @ 240V</span>
-        </div>
-        <div class="modal-total-item">
-          <span class="modal-total-val" id="fixCount" style="color:var(--text-mid)">0</span>
-          <span class="modal-total-label">Total Fixtures</span>
-        </div>
-        <div class="modal-total-item" style="text-align:left;max-width:160px">
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.6;" id="fixCapNote"></span>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="modal-btn-add" onclick="closeFixtureModal()">Cancel</button>
-        <button class="modal-btn-apply" onclick="applyFixtureCalc()">✓ Apply to Load</button>
-      </div>
-
-    </div>
-  </div>
-</div>
+<!-- fixtureModal injected dynamically by JS -->
 
 </body></html>`;
 
@@ -2090,12 +2038,55 @@ const FIXTURE_PRESETS = [
 
 function openFixtureModal(loadId) {
   fixtureTargetLoadId = loadId;
-  console.log('openFixtureModal called with loadId:', loadId);
-  const modal = document.getElementById('fixtureModal');
-  console.log('modal element:', modal);
-  if (!modal) { console.error('fixtureModal element not found!'); return; }
-  modal.classList.remove('hidden');
-  console.log('modal classes after remove:', modal.className);
+  const existing = document.getElementById('fixtureModal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'fixtureModal';
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,Arial,sans-serif;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,0.25);width:100%;max-width:560px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column;">
+      <div style="background:#1a5c2a;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+        <span style="font-family:Oswald,Arial,sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">💡 Lighting Circuit Calculator</span>
+        <button onclick="closeFixtureModal()" style="background:transparent;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;opacity:0.8;">✕</button>
+      </div>
+      <div style="padding:18px;overflow-y:auto;flex:1;">
+        <div style="background:#e8f5e9;border:1px solid #b8ccb8;border-radius:4px;padding:10px 14px;font-size:12px;color:#1a5c2a;margin-bottom:14px;line-height:1.6;">
+          Enter each fixture type on this circuit. Calculates actual running watts — more accurate than 3 W/sq ft.<br>
+          <strong>Tip:</strong> LED downlights: 6–10W · LED strips: 10–15W/m · Fluorescent 4ft: 32W · Incandescent: 60W
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 80px 80px 30px;gap:8px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #dde5dd;">
+          <span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#6b8070;font-family:monospace;">Fixture Type</span>
+          <span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#6b8070;font-family:monospace;">Qty</span>
+          <span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#6b8070;font-family:monospace;">W each</span>
+          <span></span>
+        </div>
+        <div id="fixtureRows" style="margin-bottom:10px;"></div>
+        <button onclick="addFixtureRow()" style="padding:7px 14px;background:#fff;border:1px solid #b8ccb8;border-radius:3px;font-size:12px;color:#3d5040;cursor:pointer;margin-bottom:16px;">+ Add Fixture Type</button>
+        <div style="background:#f7f9f7;border:1px solid #b8ccb8;border-radius:4px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+          <div style="text-align:center;">
+            <span id="fixTotal" style="font-family:Oswald,Arial,sans-serif;font-size:28px;font-weight:700;color:#1a5c2a;display:block;line-height:1;">0</span>
+            <span style="font-size:9px;color:#6b8070;text-transform:uppercase;letter-spacing:1px;font-family:monospace;">Total Watts</span>
+          </div>
+          <div style="text-align:center;">
+            <span id="fixAmps" style="font-family:Oswald,Arial,sans-serif;font-size:28px;font-weight:700;color:#0277bd;display:block;line-height:1;">0.00</span>
+            <span style="font-size:9px;color:#6b8070;text-transform:uppercase;letter-spacing:1px;font-family:monospace;">Amps @ 240V</span>
+          </div>
+          <div style="text-align:center;">
+            <span id="fixCount" style="font-family:Oswald,Arial,sans-serif;font-size:28px;font-weight:700;color:#3d5040;display:block;line-height:1;">0</span>
+            <span style="font-size:9px;color:#6b8070;text-transform:uppercase;letter-spacing:1px;font-family:monospace;">Total Fixtures</span>
+          </div>
+          <div style="max-width:160px;">
+            <span id="fixCapNote" style="font-size:10px;color:#6b8070;line-height:1.6;font-family:monospace;"></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button onclick="closeFixtureModal()" style="padding:9px 18px;background:#fff;border:1px solid #b8ccb8;color:#3d5040;font-family:Oswald,Arial,sans-serif;font-size:14px;letter-spacing:1px;border-radius:3px;cursor:pointer;">Cancel</button>
+          <button onclick="applyFixtureCalc()" style="padding:9px 20px;background:#1a5c2a;color:#fff;border:none;font-family:Oswald,Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;border-radius:3px;cursor:pointer;">✓ Apply to Load</button>
+        </div>
+      </div>
+    </div>`;
+  modal.addEventListener('click', function(e) { if (e.target === this) closeFixtureModal(); });
+  document.body.appendChild(modal);
   document.getElementById('fixtureRows').innerHTML = '';
   fixtureRowUid = 0;
   // Pre-populate with one row
@@ -2104,7 +2095,8 @@ function openFixtureModal(loadId) {
 }
 
 function closeFixtureModal() {
-  document.getElementById('fixtureModal').classList.add('hidden');
+  const modal = document.getElementById('fixtureModal');
+  if (modal) modal.remove();
   fixtureTargetLoadId = null;
 }
 
@@ -2112,7 +2104,7 @@ function addFixtureRow(presetLabel, presetWatts, presetQty) {
   const id   = ++fixtureRowUid;
   const wrap = document.getElementById('fixtureRows');
   const div  = document.createElement('div');
-  div.className = 'fixture-row';
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 80px 80px 30px;gap:8px;align-items:center;margin-bottom:8px;';
   div.id = 'frow_' + id;
 
   // Build preset select options
@@ -2120,22 +2112,20 @@ function addFixtureRow(presetLabel, presetWatts, presetQty) {
     `<option value="${p.watts}" ${presetLabel && p.label === presetLabel ? 'selected' : ''}>${p.label}</option>`
   ).join('');
 
+  const inputStyle = 'width:100%;font-family:monospace;font-size:13px;padding:7px 9px;border:1px solid #dde5dd;border-radius:3px;background:#f7f9f7;color:#1a2e1a;outline:none;box-sizing:border-box;';
   div.innerHTML = `
     <div>
-      <label>Fixture Type</label>
-      <select onchange="onFixturePresetChange(${id}, this)">
+      <select onchange="onFixturePresetChange(${id}, this)" style="${inputStyle}">
         ${opts}
       </select>
     </div>
     <div>
-      <label>Quantity</label>
-      <input type="number" id="fqty_${id}" value="${presetQty || 1}" min="1" max="100" step="1" oninput="updateFixtureTotals()">
+      <input type="number" id="fqty_${id}" value="${presetQty || 1}" min="1" max="100" step="1" oninput="updateFixtureTotals()" style="${inputStyle}text-align:center;">
     </div>
     <div>
-      <label>Watts each</label>
-      <input type="number" id="fwatts_${id}" value="${presetWatts || 8}" min="0.5" max="2000" step="0.5" oninput="updateFixtureTotals()">
+      <input type="number" id="fwatts_${id}" value="${presetWatts || 8}" min="0.5" max="2000" step="0.5" oninput="updateFixtureTotals()" style="${inputStyle}text-align:right;">
     </div>
-    <button class="fixture-del" onclick="deleteFixtureRow(${id})" title="Remove">✕</button>
+    <button onclick="deleteFixtureRow(${id})" title="Remove" style="background:#fff;border:1px solid #dde5dd;color:#6b8070;border-radius:3px;width:26px;height:34px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:0;">✕</button>
   `;
   wrap.appendChild(div);
   updateFixtureTotals();
@@ -2242,12 +2232,7 @@ function addLightingAndCalc() {
 }
 
 // Close modal on overlay click
-const _fixtureModalEl = document.getElementById('fixtureModal');
-if (_fixtureModalEl) {
-  _fixtureModalEl.addEventListener('click', function(e) {
-    if (e.target === this) closeFixtureModal();
-  });
-}
+// modal listener attached dynamically in openFixtureModal
 
 </script>
 </body>
