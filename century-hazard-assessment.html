@@ -269,6 +269,29 @@
     margin-right:6px;
   }
 
+  /* full, unclipped text shown in place of inputs/textareas when printing */
+  .print-value{
+    display:none;
+  }
+  @media print{
+    #panel-prejob input, #panel-prejob textarea, #panel-aha input, #panel-aha textarea{
+      display:none !important;
+    }
+    .print-value{
+      display:block !important;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-size:13px;
+      line-height:1.4;
+      padding:6px 8px;
+      border:1px solid #999;
+      border-radius:4px;
+      min-height:18px;
+      background:#fff;
+      color:#000;
+    }
+  }
+
   /* bottom action bar */
   .action-bar{
     position:fixed;bottom:0;left:0;right:0;
@@ -300,7 +323,7 @@
   .save-toast.show{opacity:1;}
 
   @media print{
-    nav.tabs, .action-bar, .add-btn, .remove-step, .sig-clear, .matrix-toggle, .updates-list, .updates-card{display:none !important;}
+    nav.tabs, .action-bar, .add-btn, .remove-step, .sig-clear, .matrix-toggle, .updates-list, .updates-card, select.quick-pick{display:none !important;}
     header.app-header{position:static;box-shadow:none;}
     body{background:#fff;}
     main{padding:0;max-width:100%;}
@@ -330,6 +353,7 @@
   <div class="card updates-card">
     <button type="button" class="matrix-toggle" onclick="toggleUpdates()" id="updatesToggleBtn">Show recent updates</button>
     <ul class="updates-list" id="updatesList">
+      <li><span class="update-date">Jul 24, 2026</span> Added two Cal/OSHA-specific heat illness controls to the Controls quick-pick list (potable water minimum and shade structure requirement, per Title 8 CCR §3395). Fixed printed/PDF output so long field entries display in full instead of being cut off inside a scroll box — this matters for OSHA legibility.</li>
       <li><span class="update-date">Jul 21, 2026</span> Added your real Century Roof &amp; Solar logo to the header (redesigned header to white background so the logo shows properly). Logo now also appears on printed/PDF copies. Confirmed Equipment, Training, and Inspection fields already combine multiple quick-picks instead of overwriting.</li>
       <li><span class="update-date">Jul 21, 2026</span> Quick-pick dropdowns now combine multiple selections instead of replacing — pick a second hazard or control and it's added alongside the first, not overwriting it. Hazard field is now a multi-line box to fit combined entries.</li>
       <li><span class="update-date">Jul 21, 2026</span> Added quick-pick dropdowns to repetitive fields (Job Step/Task, Hazard, Controls, Equipment, Training, Inspection, Unsafe Condition, Corrective Action) — pick a common entry or type your own.</li>
@@ -482,7 +506,9 @@ const QUICK_CONTROLS = [
   "Need to cover skylight openings with plywood (if present).",
   "Maintain 3-point contact on ladder at all times.",
   "Designate a ground spotter during material staging and debris removal.",
-  "Cordon off ground-level work area beneath the roof work zone."
+  "Cordon off ground-level work area beneath the roof work zone.",
+  "Provide fresh, cool, potable drinking water on site at no cost to employees, sufficient for at least 1 quart (32 oz) per employee per hour for the entire shift, per Cal/OSHA Heat Illness Prevention Standard (Title 8 CCR §3395).",
+  "Provide accessible shade (natural or a portable shade structure) whenever temperature exceeds 80°F, sized to accommodate all employees on recovery/rest breaks in a normal seated posture without touching, per Cal/OSHA Heat Illness Prevention Standard (Title 8 CCR §3395)."
 ];
 const QUICK_EQUIPMENT = [
   "Harness, Retractable, and Anchor",
@@ -862,12 +888,29 @@ function newForm(){
   recalcAll();
 }
 
+function preparePrintFields(){
+  const fields = document.querySelectorAll('#panel-prejob input[type=text], #panel-prejob input[type=date], #panel-prejob textarea, #panel-aha input[type=text], #panel-aha input[type=date], #panel-aha textarea');
+  fields.forEach(el=>{
+    const div = document.createElement('div');
+    div.className = 'print-value';
+    div.textContent = el.value || '';
+    el.insertAdjacentElement('afterend', div);
+  });
+}
+function restorePrintFields(){
+  document.querySelectorAll('.print-value').forEach(div=>div.remove());
+}
+window.addEventListener('afterprint', restorePrintFields);
+
 function printForm(){
   saveData();
   const activeTab = document.getElementById('panel-prejob').classList.contains('active') ? 'prejob' : 'aha';
   document.getElementById('panel-'+activeTab).classList.add('print-active');
+  preparePrintFields();
   window.print();
   document.getElementById('panel-'+activeTab).classList.remove('print-active');
+  // fallback cleanup in case afterprint doesn't fire (some mobile browsers)
+  setTimeout(restorePrintFields, 1500);
 }
 
 // autosave on input
